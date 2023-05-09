@@ -60,13 +60,18 @@ class Game:
         for y in range(GRID_HEIGHT):
             for x in range(GRID_WIDTH):
                 rect = pygame.Rect(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE)
-                pygame.draw.rect(self.screen, WHITE, rect, 1)
+                pygame.draw.rect(self.screen, NEON_GREEN, rect, 1)
                 if maze[y][x] == 1:
-                    pygame.draw.rect(self.screen, WHITE, rect)
+                    pygame.draw.rect(self.screen, RED, rect)
                 if GOAL_POS[0] == x and GOAL_POS[1] == y:
                     if GOAL_POS[0] < 0 or GOAL_POS[0] >= GRID_WIDTH or GOAL_POS[1] < 0 or GOAL_POS[1] >= GRID_HEIGHT:
                         continue
                     pygame.draw.circle(self.screen, BLUE, rect.center, GRID_SIZE // 2)
+                if (x, y) == GOAL_POS and (x, y) == self.agent_pos:
+                    text = font.render('Bazingga!', True, PURPLE)
+                    text_rect = text.get_rect(center=self.screen.get_rect().center)
+                    self.screen.blit(text, text_rect)
+
 
         # Find the path from the agent to the goal grid
         path = astar(maze, self.agent_pos, GOAL_POS)
