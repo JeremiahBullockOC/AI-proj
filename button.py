@@ -5,15 +5,15 @@
 import sys
 import pygame
 
+
 # Configuration
-pygame.init()
-fps = 60
-fpsClock = pygame.time.Clock()
-width, height = 640, 480
-screen = pygame.display.set_mode((width, height))
+# pygame.init()
+# fps = 60
+# fpsClock = pygame.time.Clock()
+# width, height = 640, 480
+# screen = pygame.display.set_mode((width, height))
 
 font = pygame.font.SysFont('Arial', 40)
-
 objects = []
 
 class Button():
@@ -65,7 +65,7 @@ class Button():
             self.buttonRect.width/2 - self.buttonSurf.get_rect().width/2,
             self.buttonRect.height/2 - self.buttonSurf.get_rect().height/2
         ])
-        screen.blit(self.buttonSurface, self.buttonRect)
+        self.screen.blit(self.buttonSurface, self.buttonRect)
 
 # def myFunction():
 #     print('Button Pressed')

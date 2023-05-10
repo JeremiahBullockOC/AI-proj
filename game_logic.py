@@ -12,7 +12,7 @@ class Game:
     def __init__(self):
         # Set up the screen
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
-        pygame.display.set_caption("My Game")
+        pygame.display.set_caption("My Game: Running")
 
         # Define the agent starting position
         self.agent_pos = AGENT_POS
