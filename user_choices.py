@@ -109,30 +109,30 @@ class Choices:
         # State 4 - Color theme
         # State 5 - Run 
         if(state.casefold() == 'state 1'):
-            automateButton = Button(30, 30, 300, 80, 'Automate', controlClick('Automate'))
-            manualButton = Button(30, 130, 300, 80, 'Manual', controlClick('Manual'))
+            automateButton = Button(30, 30, 300, 80, 'Automate', Choices.controlClick('Automate'))
+            manualButton = Button(30, 130, 300, 80, 'Manual', Choices.controlClick('Manual'))
 
         elif(state.casefold() == 'state 2a' or state.casefold() == 'state 2b_1'):
-            astarButton = Button(30, 30, 300, 80, 'A* Algorithm', algoClick('astar'))
-            dfsButton = Button(30, 130, 300, 80, 'DFS Algorithm', algoClick('dfs'))
-            ucsButton = Button(30, 230, 300, 80, 'UCS Algorithm', algoClick('ucs'))
-            returnButton = Button(30, 330, 300, 80, 'Return', returnFunc())
+            astarButton = Button(30, 30, 300, 80, 'A* Algorithm', Choices.algoClick('astar'))
+            dfsButton = Button(30, 130, 300, 80, 'DFS Algorithm', Choices.algoClick('dfs'))
+            ucsButton = Button(30, 230, 300, 80, 'UCS Algorithm', Choices.algoClick('ucs'))
+            returnButton = Button(30, 330, 300, 80, 'Return', Choices.returnFunc())
 
         elif(state.casefold() == 'state 2b'):
-            assistedButton = Button(30, 30, 300, 80, 'Path Assisted', assistClick('assisted'))
-            unassistedButton = Button(30, 130, 300, 80, 'No Assistance', assistClick('unassisted'))
-            returnButton = Button(30, 230, 300, 80, 'Return', returnFunc())
+            assistedButton = Button(30, 30, 300, 80, 'Path Assisted', Choices.assistClick('assisted'))
+            unassistedButton = Button(30, 130, 300, 80, 'No Assistance', Choices.assistClick('unassisted'))
+            returnButton = Button(30, 230, 300, 80, 'Return', Choices.returnFunc())
 
         elif(state.casefold() == 'state 3'):
-            smallMazeButton = Button(30, 30, 300, 80, 'Small Maze', mazeClick('small maze'))
-            bigMazeButton = Button(30, 130, 300, 80, 'Big Maze', mazeClick('big maze'))
-            returnButton = Button(30, 230, 300, 80, 'Return', returnFunc())
+            smallMazeButton = Button(30, 30, 300, 80, 'Small Maze', Choices.mazeClick('small maze'))
+            bigMazeButton = Button(30, 130, 300, 80, 'Big Maze', Choices.mazeClick('big maze'))
+            returnButton = Button(30, 230, 300, 80, 'Return', Choices.returnFunc())
 
         elif(state.casefold() == 'state 4'):
-            basicButton = Button(30, 30, 300, 80, 'Basic Theme', themeClick('basic'))
-            retroButton = Button(30, 130, 300, 80, 'Retro Theme', themeClick('retro'))
-            oceanButton = Button(30, 230, 300, 80, 'Ocean Theme', themeClick('ocean'))
-            returnButton = Button(30, 330, 300, 80, 'Return', returnFunc())
+            basicButton = Button(30, 30, 300, 80, 'Basic Theme', Choices.themeClick('basic'))
+            retroButton = Button(30, 130, 300, 80, 'Retro Theme', Choices.themeClick('retro'))
+            oceanButton = Button(30, 230, 300, 80, 'Ocean Theme', Choices.themeClick('ocean'))
+            returnButton = Button(30, 330, 300, 80, 'Return', Choices.returnFunc())
         
         pygame.display.flip()
 
@@ -147,7 +147,7 @@ class Choices:
                     object.process()
 
                 if(state.casefold() == 'state 5'):
-                    finish()
+                    Choices.finish()
 
                 # Draw the game
                 self.draw()
