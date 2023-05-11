@@ -17,9 +17,10 @@ font = pygame.font.SysFont('Arial', 40)
 objects = []
 
 class Button():
-    def __init__(self, x, y, width, height, buttonText='Button', onclickFunction=None, onePress=False):
+    def __init__(self, buttonVal, x, y, width, height, buttonText='Button', onclickFunction=None, onePress=False):
         self.x = x
         self.y = y
+        self.buttonVal = buttonVal
         self.width = width
         self.height = height
         self.onclickFunction = onclickFunction
@@ -40,7 +41,7 @@ class Button():
 
         objects.append(self)
 
-    def process(self):
+    def process(self, screen):
 
         mousePos = pygame.mouse.get_pos()
         
@@ -65,7 +66,7 @@ class Button():
             self.buttonRect.width/2 - self.buttonSurf.get_rect().width/2,
             self.buttonRect.height/2 - self.buttonSurf.get_rect().height/2
         ])
-        self.screen.blit(self.buttonSurface, self.buttonRect)
+        screen.blit(self.buttonSurface, self.buttonRect)
 
 # def myFunction():
 #     print('Button Pressed')
