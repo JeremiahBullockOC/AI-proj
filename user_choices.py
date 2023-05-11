@@ -20,7 +20,20 @@ control = ''
 maze_size = ''
 algorithm = ''
 theme = ''
-
+# automateButton = None
+# manualButton = None
+# astarButton = None
+# dfsButton = None
+# ucsButton = None
+# returnButton = None
+# assistedButton = None
+# unassistedButton = None
+# basicButton = None
+# retroButton = None
+# oceanButton = None
+# smallMazeButton = None
+# bigMazeButton = None
+buttons = []
 
 class Choices:
     def __init__(self):
@@ -33,20 +46,36 @@ class Choices:
             # Define the game loop
             self.running = True
 
-    def returnFunc():
-            if(state.casefold() == 'state 2' or 'state 2a' or 'state 2b'):
-                state = 'State 1'
-            elif(state.casefold() == 'state 2b_1'):
+            self.automateButton = Button('Automate', 30, 30, 300, 80, 'Automate', lambda: self.controlClick(self.automateButton))
+            self.manualButton = Button('Manual', 30, 130, 300, 80, 'Manual', lambda: self.controlClick(self.manualButton))
+            self.astarButton = Button('astar', 30, 30, 300, 80, 'A* Algorithm', lambda: self.algoClick(self.astarButton))
+            self.dfsButton = Button('dfs', 30, 130, 300, 80, 'DFS Algorithm', lambda: self.algoClick(self.dfsButton))
+            self.ucsButton = Button('ucs', 30, 230, 300, 80, 'UCS Algorithm', lambda: self.algoClick(self.ucsButton))
+            self.returnButton = Button('', 30, 330, 300, 80, 'Return', self.returnFunc)
+            self.assistedButton = Button('assisted', 30, 30, 300, 80, 'Path Assisted', lambda: self.assistClick(self.assistedButton))
+            self.unassistedButton = Button('unassisted', 30, 130, 300, 80, 'No Assistance', lambda: self.assistClick(self.unassistedButton))
+            self.basicButton = Button('basic', 30, 30, 300, 80, 'Basic Theme', lambda: self.themeClick(self.basicButton))
+            self.retroButton = Button('retro', 30, 130, 300, 80, 'Retro Theme', lambda: self.themeClick(self.retroButton))
+            self.oceanButton = Button('ocean', 30, 230, 300, 80, 'Ocean Theme', lambda: self.themeClick(self.oceanButton))
+            self.smallMazeButton = Button('small maze', 30, 30, 300, 80, 'Small Maze', lambda: self.mazeClick(self.smallMazeButton))
+            self.bigMazeButton = Button('big maze', 30, 130, 300, 80, 'Big Maze', lambda: self.mazeClick(self.bigMazeButton))
+            buttons.extend([self.automateButton, self.manualButton, self.astarButton, self.dfsButton, self.ucsButton,self.returnButton,self.assistedButton, self.unassistedButton, self.basicButton,self.retroButton, self.oceanButton, self.smallMazeButton, self.bigMazeButton])
+    def returnFunc(self):
+        global state
+        if state.casefold() == 'state 2' or state.casefold() == 'state 2a' or state.casefold() == 'state 2b':
+            state = 'State 1'
+        elif state.casefold() == 'state 2b_1':
+            state = 'state 2b'
+        elif state.casefold() == 'state 3':
+            if control.casefold() == 'Automated':
+                state = 'state 2a'
+            elif algorithm.casefold() == 'unassisted':
                 state = 'state 2b'
-            elif(state.casefold() == 'state 3'):
-                if(control.casefold() == 'Automated'):
-                    state = 'state 2a'
-                elif(algorithm.casefold == 'unassisted'):
-                    state = 'state 2b'
-                else:
-                    state ='state 2b_1'
-            elif(state.casefold() == 'state 4'):
-                state = 'State 3'
+            else:
+                state = 'state 2b_1'
+        elif state.casefold() == 'state 4':
+            state = 'State 3'
+
             
     # Automated or manual
         # If automated pause for a slight moment after each movement so user can see initial state.
@@ -116,9 +145,8 @@ class Choices:
 
 
     def draw(self):
-        objects.clear()
+        # buttons.clear()
 
-        self.screen.fill((20, 20, 20))
         # State 1 - Automated or Manual
         # State 2a - Automated choose Algo
         # State 2b - Manual choose Assisted or Unassisted
@@ -126,36 +154,45 @@ class Choices:
         # State 3 - Maze size
         # State 4 - Color theme
         # State 5 - Run 
-        if(state.casefold() in ['state 1']):
-            automateButton = Button('Automate', 30, 30, 300, 80, 'Automate', lambda: self.controlClick(automateButton))
-            manualButton = Button('Manual', 30, 130, 300, 80, 'Manual', lambda: self.controlClick(manualButton))
+        self.screen.fill((20, 20, 20))
+        
+        # State 1 - Automated or Manual
+        if state.casefold() in ['state 1']:
+            self.automateButton.process(self.screen)
+            self.manualButton.process(self.screen)
 
-        elif(state.casefold() in ['state 2a', 'state 2b_1']):
-            astarButton = Button('astar', 30, 30, 300, 80, 'A* Algorithm', lambda: self.algoClick(astarButton))
-            dfsButton = Button('dfs', 30, 130, 300, 80, 'DFS Algorithm', lambda: self.algoClick(dfsButton))
-            ucsButton = Button('ucs', 30, 230, 300, 80, 'UCS Algorithm', lambda: self.algoClick(ucsButton))
-            returnButton = Button(30, 330, 300, 80, 'Return', self.returnFunc())
+        # State 2a - Automated choose Algo
+        # State 2b - Manual choose Assisted or Unassisted
+        # State 2b1 - Assisted - Algo of choice
+        elif state.casefold() in ['state 2a', 'state 2b_1']:
+            self.astarButton.process(self.screen)
+            self.dfsButton.process(self.screen)
+            self.ucsButton.process(self.screen)
+            self.returnButton.process(self.screen)
 
-        elif(state.casefold() in ['state 2b']):
-            assistedButton = Button('assisted', 30, 30, 300, 80, 'Path Assisted', lambda: self.assistClick(assistedButton))
-            unassistedButton = Button('unassisted', 30, 130, 300, 80, 'No Assistance', lambda: self.assistClick(unassistedButton))
-            returnButton = Button(30, 230, 300, 80, 'Return', self.returnFunc())
+        # State 2b - Manual choose Assisted or Unassisted
+        elif state.casefold() in ['state 2b']:
+            self.assistedButton.process(self.screen)
+            self.unassistedButton.process(self.screen)
+            self.returnButton.process(self.screen)
 
-        elif(state.casefold() in ['state 3']):
-            smallMazeButton = Button('small maze', 30, 30, 300, 80, 'Small Maze', lambda: self.mazeClick(smallMazeButton))
-            bigMazeButton = Button('big maze', 30, 130, 300, 80, 'Big Maze', lambda: self.mazeClick(bigMazeButton))
-            returnButton = Button(30, 230, 300, 80, 'Return', self.returnFunc())
+        # State 3 - Maze size
+        elif state.casefold() in ['state 3']:
+            self.smallMazeButton.process(self.screen)
+            self.bigMazeButton.process(self.screen)
+            self.returnButton.process(self.screen)
 
-        elif(state.casefold() in ['state 4']):
-            basicButton = Button('basic', 30, 30, 300, 80, 'Basic Theme', lambda: self.themeClick(basicButton))
-            retroButton = Button('retro', 30, 130, 300, 80, 'Retro Theme', lambda: self.themeClick(retroButton))
-            oceanButton = Button('ocean', 30, 230, 300, 80, 'Ocean Theme', lambda: self.themeClick(oc))
-            returnButton = Button(30, 330, 300, 80, 'Return', self.returnFunc())
+        # State 4 - Color theme
+        elif state.casefold() in ['state 4']:
+            self.basicButton.process(self.screen)
+            self.retroButton.process(self.screen)
+            self.oceanButton.process(self.screen)
+            self.returnButton.process(self.screen)
         
         pygame.display.flip()
 
     # TODO
-    def finish():
+    def finish(self):
         return
 
     def handle_events(self):
@@ -168,7 +205,7 @@ class Choices:
                 
                 self.handle_events()
 
-                for object in objects:
+                for object in buttons:
                     object.process(self.screen)
 
                 if(state.casefold() == 'state 5'):
