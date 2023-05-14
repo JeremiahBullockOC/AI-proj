@@ -40,13 +40,31 @@ WIDTH, HEIGHT = GRID_WIDTH * GRID_SIZE, GRID_HEIGHT * GRID_SIZE
 CHOICES_WIDTH, CHOICES_HEIGHT = 500, 600
 
 # Define the colors
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-PURPLE = (128, 0, 128)
-YELLOW = (255, 255, 0)
-BLUE = (0, 0, 255)
-NEON_GREEN = (57, 255, 20)
-RED = (255, 0, 0)
+
+#BASIC - Black background, white grid, grey obstacle, yellow player, purple path, blue destination
+BASIC_BACKGROUND = (0, 0, 0)
+BASIC_GRID = (255, 255, 255)
+BASIC_OBSTACLE = (128, 128, 128)
+BASIC_PATH = (128, 0, 128)
+BASIC_AGENT = (255, 255, 0)
+BASIC_DESTINATION = (0, 0, 255)
+
+
+#RETRO - Black background, Green grid, Red Walls, Orange Player, Light Blue Path, White Destination
+RETRO_BACKGROUND = (0, 0, 0)
+RETRO_GRID = (57, 255, 20)
+RETRO_AGENT = (255, 95, 31)
+RETRO_PATH = (4, 217, 255)
+RETRO_WALL = (255, 0, 0)
+RETRO_DESTINATION = (255, 255, 255)
+
+#OCEAN - Deep blue background, Light blue grid, Deep grey blue Walls, Soft Pink Player, Light Blue Path, White Path, Seafoam Green Destination
+OCEAN_BACKGROUND = (0, 65, 81)
+OCEAN_GRID = (185,241,254)
+OCEAN_AGENT = (255,184,191)
+OCEAN_PATH = (242,252,254)
+OCEAN_WALL = (3,38,45)
+OCEAN_DESTINATION = (159, 226, 191)
 
 # Define the agent starting position
 AGENT_POS = (0, 0)
