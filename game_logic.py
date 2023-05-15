@@ -19,6 +19,7 @@ class Game:
         pygame.font.init()
         self.font = pygame.font.SysFont(FONT, FONT_SIZE)
 
+        self.visited = set()
         
         # Get user choices
         self.theme = choice.getTheme()
@@ -162,11 +163,12 @@ class Game:
 
 
         if(self.automated or self.assisted):
+
              # Find the path from the agent to the goal grid
             if(self.algorithm == 'astar'):
                 path = astar(self.usedMaze, self.agent_pos, self.destinationPos)
             elif(self.algorithm == 'dfs'):
-                path = dfs(self.usedMaze, self.agent_pos, self.destinationPos)
+                path = dfs(self.usedMaze, self.agent_pos, self.destinationPos, self.visited)
             elif(self.algorithm == 'bfs'):
                 path = bfs(self.usedMaze, self.agent_pos, self.destinationPos)
             elif(self.algorithm == 'ucs'):
@@ -187,7 +189,8 @@ class Game:
         pygame.display.flip()
 
         if(self.automated and self.agent_pos != self.destinationPos):
-            self.agent_pos = path[1]
+            self.visited.add(self.agent_pos)
+            self.agent_pos = path[1] 
             time.sleep(0.2)
 
     def run(self):

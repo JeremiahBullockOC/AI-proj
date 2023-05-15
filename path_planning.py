@@ -59,10 +59,10 @@ def astar(maze, start, goal):
     # If we can't reach the goal node, return None
     return None
 
-def dfs(maze, start, goal):
+def dfs(maze, start, goal, visitedPrior):
     # Initialize the stack and the visited set
     stack = [(start, [start])]
-    visited = set()
+    visited = visitedPrior.copy()
 
     # Loop through the stack
     while stack:
