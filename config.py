@@ -39,12 +39,14 @@ WIDTH, HEIGHT = GRID_WIDTH * GRID_SIZE, GRID_HEIGHT * GRID_SIZE
 
 CHOICES_WIDTH, CHOICES_HEIGHT = 500, 600
 
+PURPLE = (150, 0, 128)
+
 # Define the colors
 
 #BASIC - Black background, white grid, grey obstacle, yellow player, purple path, blue destination
 BASIC_BACKGROUND = (0, 0, 0)
 BASIC_GRID = (255, 255, 255)
-BASIC_OBSTACLE = (128, 128, 128)
+BASIC_WALL = (128, 128, 128)
 BASIC_PATH = (128, 0, 128)
 BASIC_AGENT = (255, 255, 0)
 BASIC_DESTINATION = (0, 0, 255)

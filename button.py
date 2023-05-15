@@ -7,7 +7,7 @@ import pygame
 
 
 # Configuration
-# pygame.init()
+pygame.init()
 # fps = 60
 # fpsClock = pygame.time.Clock()
 # width, height = 640, 480

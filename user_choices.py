@@ -5,6 +5,7 @@ from config import *
 from button import *
 
 pygame.init()
+pygame.font.init()
 
 # Choices state
 global state
@@ -90,8 +91,6 @@ class Choices:
         global clicked
         clicked = True
 
-
-        print('Control')
         control = button.buttonVal
         if control.casefold() == 'automated':
             if state.casefold() == 'state 1':
@@ -221,9 +220,8 @@ class Choices:
         
         pygame.display.flip()
 
-    # TODO
     def finish(self):
-        return
+        self.running = False
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -252,6 +250,14 @@ class Choices:
             # Quit pygame
             pygame.quit()
 
+    def getTheme(self):
+        return theme
+    def getControl(self):
+        return control
+    def getAlgorithm(self):
+        return algorithm
+    def getMaze(self):
+        return maze_size
 
 
 
