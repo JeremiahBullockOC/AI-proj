@@ -5,7 +5,6 @@ from config import *
 from button import *
 
 pygame.init()
-pygame.font.init()
 
 # Choices state
 global state
@@ -48,8 +47,9 @@ class Choices:
             self.manualButton = Button('Manual', 30, 130, 300, 80, 'Manual', lambda: self.controlClick(self.manualButton))
             self.astarButton = Button('astar', 30, 30, 300, 80, 'A* Algorithm', lambda: self.algoClick(self.astarButton))
             self.dfsButton = Button('dfs', 30, 130, 300, 80, 'DFS Algorithm', lambda: self.algoClick(self.dfsButton))
-            self.ucsButton = Button('ucs', 30, 230, 300, 80, 'UCS Algorithm', lambda: self.algoClick(self.ucsButton))
-            self.returnButton = Button('', 30, 330, 300, 80, 'Return', lambda: self.returnFunc)
+            self.bfsButton = Button('bfs', 30, 230, 300, 80, 'BFS Algorithm', lambda: self.algoClick(self.bfsButton))
+            self.ucsButton = Button('ucs', 30, 330, 300, 80, 'UCS Algorithm', lambda: self.algoClick(self.ucsButton))
+            self.returnButton = Button('', 30, 430, 300, 80, 'Return', lambda: self.returnFunc)
             self.assistedButton = Button('assisted', 30, 30, 300, 80, 'Path Assisted', lambda: self.assistClick(self.assistedButton))
             self.unassistedButton = Button('unassisted', 30, 130, 300, 80, 'No Assistance', lambda: self.assistClick(self.unassistedButton))
             self.basicButton = Button('basic', 30, 30, 300, 80, 'Basic Theme', lambda: self.themeClick(self.basicButton))
@@ -60,7 +60,7 @@ class Choices:
 
             controlButtons.extend([self.automateButton, self.manualButton])
             assistanceButtons.extend([self.assistedButton, self.unassistedButton])
-            algorithmButtons.extend([self.astarButton, self.dfsButton, self.ucsButton])
+            algorithmButtons.extend([self.astarButton, self.dfsButton, self.bfsButton, self.ucsButton])
             mazeButtons.extend([self.smallMazeButton, self.bigMazeButton])
             themeButtons.extend([self.basicButton, self.retroButton, self.oceanButton])
             
@@ -130,6 +130,8 @@ class Choices:
             algorithm = 'astar'
         elif button.buttonVal.casefold() == 'dfs':
             algorithm = 'dfs'
+        elif button.buttonVal.casefold() == 'bfs':
+            algorithm = 'bfs'
         elif button.buttonVal.casefold() == 'ucs':
             algorithm = 'ucs'
 

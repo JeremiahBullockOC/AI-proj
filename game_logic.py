@@ -7,15 +7,17 @@ from user_choices import Choices
 
 # Initialize pygame
 pygame.init()
-pygame.font.init()
+
 
 # Define the font
-font = pygame.font.SysFont(FONT, FONT_SIZE)
 
 class Game:
     def __init__(self):
         choice = Choices()
         choice.run() 
+
+        pygame.font.init()
+        self.font = pygame.font.SysFont(FONT, FONT_SIZE)
 
         
         # Get user choices
@@ -154,7 +156,7 @@ class Game:
                         continue
                     pygame.draw.circle(self.screen, self.destinationColor, rect.center, GRID_SIZE // 2)
                 if (x, y) == self.destinationPos and (x, y) == self.agent_pos:
-                    text = font.render('Bazingga!', True, PURPLE)
+                    text = self.font.render('Bazingga!', True, PURPLE)
                     text_rect = text.get_rect(center=self.screen.get_rect().center)
                     self.screen.blit(text, text_rect)
 
@@ -165,6 +167,10 @@ class Game:
                 path = astar(self.usedMaze, self.agent_pos, self.destinationPos)
             elif(self.algorithm == 'dfs'):
                 path = dfs(self.usedMaze, self.agent_pos, self.destinationPos)
+            elif(self.algorithm == 'bfs'):
+                path = bfs(self.usedMaze, self.agent_pos, self.destinationPos)
+            elif(self.algorithm == 'ucs'):
+                path = ucs(self.usedMaze, self.agent_pos, self.destinationPos)
 
             # Draw the path
             self.draw_path(path)
@@ -180,7 +186,7 @@ class Game:
         # Update the screen
         pygame.display.flip()
 
-        if(self.automated):
+        if(self.automated and self.agent_pos != self.destinationPos):
             self.agent_pos = path[1]
             time.sleep(0.2)
 
