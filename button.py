@@ -62,23 +62,3 @@ class Button():
             self.buttonRect.height/2 - self.buttonSurf.get_rect().height/2
         ])
         screen.blit(self.buttonSurface, self.buttonRect)
-
-# def myFunction():
-#     print('Button Pressed')
-
-# customButton = Button(30, 30, 400, 100, 'Button One (onePress)', myFunction)
-# customButton = Button(30, 140, 400, 100, 'Button Two (multiPress)', myFunction, True)
-
-# # Game loop.
-# while True:
-#     screen.fill((20, 20, 20))
-#     for event in pygame.event.get():
-#         if event.type == pygame.QUIT:
-#             pygame.quit()
-#             sys.exit()
-
-#     for object in objects:
-#         object.process()
-
-#     pygame.display.flip()
-#     fpsClock.tick(fps)

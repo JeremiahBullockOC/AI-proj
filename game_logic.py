@@ -1,7 +1,9 @@
 import pygame
+import time
 from config import *
 from path_planning import *
 from user_choices import Choices
+
 
 # Initialize pygame
 pygame.init()
@@ -100,9 +102,7 @@ class Game:
                 if event.key == pygame.K_ESCAPE:
                     self.running = False
 
-                if(self.automated):
-                    self.autoMove()
-                else:
+                if(self.automated == False):
                     if event.key == pygame.K_UP:
                         self.moveUp()
                     elif event.key == pygame.K_DOWN:
@@ -121,10 +121,6 @@ class Game:
                 rect1 = pygame.Rect(x1 * GRID_SIZE, y1 * GRID_SIZE, GRID_SIZE, GRID_SIZE)
                 rect2 = pygame.Rect(x2 * GRID_SIZE, y2 * GRID_SIZE, GRID_SIZE, GRID_SIZE)
                 pygame.draw.line(self.screen, self.pathColor, rect1.center, rect2.center, 10)
-
-
-    def autoMove():
-        return
 
     def moveUp(self):
         new_pos = (self.agent_pos[0], self.agent_pos[1] - 1)
@@ -164,12 +160,13 @@ class Game:
                     self.screen.blit(text, text_rect)
 
 
-        if(self.assisted):
+        if(self.automated or self.assisted):
              # Find the path from the agent to the goal grid
             path = astar(self.usedMaze, self.agent_pos, self.destinationPos)
 
             # Draw the path
             self.draw_path(path)
+
 
         # Draw the agent
         agent_rect = pygame.Rect(self.agent_pos[0] * GRID_SIZE, self.agent_pos[1] * GRID_SIZE, GRID_SIZE, GRID_SIZE)
@@ -180,6 +177,10 @@ class Game:
 
         # Update the screen
         pygame.display.flip()
+
+        if(self.automated):
+            self.agent_pos = path[1]
+            time.sleep(0.2)
 
     def run(self):
         while self.running:
