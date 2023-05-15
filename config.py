@@ -55,7 +55,7 @@ BASIC_DESTINATION = (0, 0, 255)
 #RETRO - Black background, Green grid, Red Walls, Orange Player, Light Blue Path, White Destination
 RETRO_BACKGROUND = (0, 0, 0)
 RETRO_GRID = (57, 255, 20)
-RETRO_AGENT = (255, 95, 31)
+RETRO_AGENT = (224,231,34)
 RETRO_PATH = (4, 217, 255)
 RETRO_WALL = (255, 0, 0)
 RETRO_DESTINATION = (255, 255, 255)

@@ -44,7 +44,7 @@ class Choices:
             # Define the game loop
             self.running = True
 
-            self.automateButton = Button('Automate', 30, 30, 300, 80, 'Automate', lambda: self.controlClick(self.automateButton))
+            self.automateButton = Button('Automated', 30, 30, 300, 80, 'Automated', lambda: self.controlClick(self.automateButton))
             self.manualButton = Button('Manual', 30, 130, 300, 80, 'Manual', lambda: self.controlClick(self.manualButton))
             self.astarButton = Button('astar', 30, 30, 300, 80, 'A* Algorithm', lambda: self.algoClick(self.astarButton))
             self.dfsButton = Button('dfs', 30, 130, 300, 80, 'DFS Algorithm', lambda: self.algoClick(self.dfsButton))

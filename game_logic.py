@@ -63,15 +63,15 @@ class Game:
             self.pathColor = BASIC_PATH
             self.destinationColor = BASIC_DESTINATION
 
-        # Setting mazes
-        if(self.maze_size.casefold() == 'small'):
-            self.usedMaze = maze
-            self.usedWidth = len(maze[0])
-            self.usedHeight = len(maze)        
-        elif(self.maze_size.casefold() == 'big'):
+        # Setting mazes        
+        if(self.maze_size.casefold() == 'big'):
             self.usedMaze = big_maze
             self.usedWidth = len(big_maze[0])
             self.usedHeight = len(big_maze)   
+        else:
+            self.usedMaze = maze
+            self.usedWidth = len(maze[0])
+            self.usedHeight = len(maze)
 
         # Editing window height
         self.windowWidth = GRID_SIZE * self.usedWidth
@@ -79,15 +79,17 @@ class Game:
         self.destinationPos = (self.usedWidth-1, self.usedHeight-1)
 
         # Checking if path assisted and what algorithm
-        if(self.algorithm.casefold == ''):
+
+
+        if(self.control.casefold() == 'automated'):
+            self.automated = True
+        else:
+            self.automated = False
+
+        if(self.algorithm.casefold() == ''):
             self.assisted = False
         else:
             self.assisted = True
-
-        if(self.control.casefold == 'manual'):
-            self.automated = False
-        else:
-            self.automated = True
 
     
     def handle_events(self):
@@ -97,14 +99,18 @@ class Game:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.running = False
-                elif event.key == pygame.K_UP:
-                    self.moveUp()
-                elif event.key == pygame.K_DOWN:
-                    self.moveDown()
-                elif event.key == pygame.K_LEFT:
-                    self.moveLeft()
-                elif event.key == pygame.K_RIGHT:
-                    self.moveRight()
+
+                if(self.automated):
+                    self.autoMove()
+                else:
+                    if event.key == pygame.K_UP:
+                        self.moveUp()
+                    elif event.key == pygame.K_DOWN:
+                        self.moveDown()
+                    elif event.key == pygame.K_LEFT:
+                        self.moveLeft()
+                    elif event.key == pygame.K_RIGHT:
+                        self.moveRight()
 
     # Add this method to the Game class
     def draw_path(self, path):
@@ -115,6 +121,10 @@ class Game:
                 rect1 = pygame.Rect(x1 * GRID_SIZE, y1 * GRID_SIZE, GRID_SIZE, GRID_SIZE)
                 rect2 = pygame.Rect(x2 * GRID_SIZE, y2 * GRID_SIZE, GRID_SIZE, GRID_SIZE)
                 pygame.draw.line(self.screen, self.pathColor, rect1.center, rect2.center, 10)
+
+
+    def autoMove():
+        return
 
     def moveUp(self):
         new_pos = (self.agent_pos[0], self.agent_pos[1] - 1)
@@ -156,7 +166,7 @@ class Game:
 
         if(self.assisted):
              # Find the path from the agent to the goal grid
-            path = astar(self.usedMaze, self.agent_pos, self.destinationColor)
+            path = astar(self.usedMaze, self.agent_pos, self.destinationPos)
 
             # Draw the path
             self.draw_path(path)
