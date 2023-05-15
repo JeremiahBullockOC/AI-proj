@@ -7,20 +7,6 @@ from user_choices import Choices
 pygame.init()
 pygame.font.init()
 
-global agentColor
-global backgroundColor
-global wallColor
-global gridColor
-global pathColor
-global destinationColor
-global usedMaze
-global usedWidth
-global usedHeight
-global windowWidth
-global windowHeight
-global assisted
-global destinationPos
-
 # Define the font
 font = pygame.font.SysFont(FONT, FONT_SIZE)
 
@@ -39,7 +25,7 @@ class Game:
 
 
         # Set up the screen
-        self.screen = pygame.display.set_mode((windowWidth, windowHeight))
+        self.screen = pygame.display.set_mode((self.windowWidth, self.windowHeight))
         pygame.display.set_caption("My Game: Running")
 
         # Define the agent starting position
@@ -51,60 +37,57 @@ class Game:
 
 
     def handle_choices(self):
-        global agentColor
-        global backgroundColor
-        global wallColor
-        global gridColor
-        global pathColor
-        global destinationColor
-        global usedMaze
-        global usedWidth
-        global usedHeight
-        global windowWidth
-        global windowHeight
-        global assisted
-        global destinationPos
+
+        global automated
+
 
         if(self.theme.casefold() == 'ocean'):
-            agentColor = OCEAN_AGENT
-            backgroundColor = OCEAN_BACKGROUND
-            wallColor = OCEAN_WALL
-            gridColor = OCEAN_GRID
-            pathColor = OCEAN_PATH
-            destinationColor = OCEAN_DESTINATION
-        elif(self.theme.casefold() == 'basic'):
-            agentColor = BASIC_AGENT
-            backgroundColor = BASIC_BACKGROUND
-            wallColor = BASIC_WALL
-            gridColor = BASIC_GRID
-            pathColor = BASIC_PATH
-            destinationColor = BASIC_DESTINATION
+            self.agentColor = OCEAN_AGENT
+            self.backgroundColor = OCEAN_BACKGROUND
+            self.wallColor = OCEAN_WALL
+            self.gridColor = OCEAN_GRID
+            self.pathColor = OCEAN_PATH
+            self.destinationColor = OCEAN_DESTINATION
         elif(self.theme.casefold() == 'retro'):
-            agentColor = RETRO_AGENT
-            backgroundColor = RETRO_BACKGROUND
-            wallColor = RETRO_WALL
-            gridColor = RETRO_GRID
-            pathColor = RETRO_PATH
-            destinationColor = RETRO_DESTINATION
-
-        if(self.maze_size.casefold() == 'small'):
-            usedMaze = maze
-            usedWidth = len(maze[0])
-            usedHeight = len(maze)        
-        elif(self.maze_size.casefold() == 'big'):
-            usedMaze = big_maze
-            usedWidth = len(big_maze[0])
-            usedHeight = len(big_maze)   
-
-        windowWidth = GRID_SIZE * usedWidth
-        windowHeight = GRID_SIZE * usedHeight
-        destinationPos = (usedWidth-1, usedHeight-1)
-
-        if(self.algorithm.casefold == ''):
-            assisted = False
+            self.agentColor = RETRO_AGENT
+            self.backgroundColor = RETRO_BACKGROUND
+            self.wallColor = RETRO_WALL
+            self.gridColor = RETRO_GRID
+            self.pathColor = RETRO_PATH
+            self.destinationColor = RETRO_DESTINATION
         else:
-            assisted = True
+            self.agentColor = BASIC_AGENT
+            self.backgroundColor = BASIC_BACKGROUND
+            self.wallColor = BASIC_WALL
+            self.gridColor = BASIC_GRID
+            self.pathColor = BASIC_PATH
+            self.destinationColor = BASIC_DESTINATION
 
+        # Setting mazes
+        if(self.maze_size.casefold() == 'small'):
+            self.usedMaze = maze
+            self.usedWidth = len(maze[0])
+            self.usedHeight = len(maze)        
+        elif(self.maze_size.casefold() == 'big'):
+            self.usedMaze = big_maze
+            self.usedWidth = len(big_maze[0])
+            self.usedHeight = len(big_maze)   
+
+        # Editing window height
+        self.windowWidth = GRID_SIZE * self.usedWidth
+        self.windowHeight = GRID_SIZE * self.usedHeight
+        self.destinationPos = (self.usedWidth-1, self.usedHeight-1)
+
+        # Checking if path assisted and what algorithm
+        if(self.algorithm.casefold == ''):
+            self.assisted = False
+        else:
+            self.assisted = True
+
+        if(self.control.casefold == 'manual'):
+            self.automated = False
+        else:
+            self.automated = True
 
     
     def handle_events(self):
@@ -115,21 +98,13 @@ class Game:
                 if event.key == pygame.K_ESCAPE:
                     self.running = False
                 elif event.key == pygame.K_UP:
-                    new_pos = (self.agent_pos[0], self.agent_pos[1] - 1)
-                    if new_pos[1] >= 0 and not usedMaze[new_pos[1]][new_pos[0]]:
-                        self.agent_pos = new_pos
+                    self.moveUp()
                 elif event.key == pygame.K_DOWN:
-                    new_pos = (self.agent_pos[0], self.agent_pos[1] + 1)
-                    if new_pos[1] < usedHeight and not usedMaze[new_pos[1]][new_pos[0]]:
-                        self.agent_pos = new_pos
+                    self.moveDown()
                 elif event.key == pygame.K_LEFT:
-                    new_pos = (self.agent_pos[0] - 1, self.agent_pos[1])
-                    if new_pos[0] >= 0 and not usedMaze[new_pos[1]][new_pos[0]]:
-                        self.agent_pos = new_pos
+                    self.moveLeft()
                 elif event.key == pygame.K_RIGHT:
-                    new_pos = (self.agent_pos[0] + 1, self.agent_pos[1])
-                    if new_pos[0] < usedWidth and not usedMaze[new_pos[1]][new_pos[0]]:
-                        self.agent_pos = new_pos
+                    self.moveRight()
 
     # Add this method to the Game class
     def draw_path(self, path):
@@ -139,40 +114,59 @@ class Game:
                 x2, y2 = path[i + 1]
                 rect1 = pygame.Rect(x1 * GRID_SIZE, y1 * GRID_SIZE, GRID_SIZE, GRID_SIZE)
                 rect2 = pygame.Rect(x2 * GRID_SIZE, y2 * GRID_SIZE, GRID_SIZE, GRID_SIZE)
-                pygame.draw.line(self.screen, pathColor, rect1.center, rect2.center, 10)
+                pygame.draw.line(self.screen, self.pathColor, rect1.center, rect2.center, 10)
+
+    def moveUp(self):
+        new_pos = (self.agent_pos[0], self.agent_pos[1] - 1)
+        if new_pos[1] >= 0 and not self.usedMaze[new_pos[1]][new_pos[0]]:
+            self.agent_pos = new_pos
+
+    def moveDown(self):
+        new_pos = (self.agent_pos[0], self.agent_pos[1] + 1)
+        if new_pos[1] < self.usedHeight and not self.usedMaze[new_pos[1]][new_pos[0]]:
+            self.agent_pos = new_pos
+    def moveRight(self):
+        new_pos = (self.agent_pos[0] + 1, self.agent_pos[1])
+        if new_pos[0] < self.usedWidth and not self.usedMaze[new_pos[1]][new_pos[0]]:
+            self.agent_pos = new_pos
+    def moveLeft(self):
+        new_pos = (self.agent_pos[0] - 1, self.agent_pos[1])
+        if new_pos[0] >= 0 and not self.usedMaze[new_pos[1]][new_pos[0]]:
+            self.agent_pos = new_pos
+    
 
     def draw(self):
         # Draw the grid
-        self.screen.fill(backgroundColor)
-        for y in range(usedHeight):
-            for x in range(usedWidth):
+        self.screen.fill(self.backgroundColor)
+        for y in range(self.usedHeight):
+            for x in range(self.usedWidth):
                 rect = pygame.Rect(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE)
-                pygame.draw.rect(self.screen, gridColor, rect, 1)
-                if usedMaze[y][x] == 1:
-                    pygame.draw.rect(self.screen, wallColor, rect)
-                if destinationPos[0] == x and destinationPos[1] == y:
-                    if destinationPos[0] < 0 or destinationPos[0] >= usedWidth or destinationPos[1] < 0 or destinationPos[1] >= usedHeight:
+                pygame.draw.rect(self.screen, self.gridColor, rect, 1)
+                if self.usedMaze[y][x] == 1:
+                    pygame.draw.rect(self.screen, self.wallColor, rect)
+                if self.destinationPos[0] == x and self.destinationPos[1] == y:
+                    if self.destinationPos[0] < 0 or self.destinationPos[0] >= self.usedWidth or self.destinationPos[1] < 0 or self.destinationPos[1] >= self.usedHeight:
                         continue
-                    pygame.draw.circle(self.screen, destinationColor, rect.center, GRID_SIZE // 2)
-                if (x, y) == destinationPos and (x, y) == self.agent_pos:
+                    pygame.draw.circle(self.screen, self.destinationColor, rect.center, GRID_SIZE // 2)
+                if (x, y) == self.destinationPos and (x, y) == self.agent_pos:
                     text = font.render('Bazingga!', True, PURPLE)
                     text_rect = text.get_rect(center=self.screen.get_rect().center)
                     self.screen.blit(text, text_rect)
 
 
-        if(assisted):
+        if(self.assisted):
              # Find the path from the agent to the goal grid
-            path = astar(usedMaze, self.agent_pos, destinationPos)
+            path = astar(self.usedMaze, self.agent_pos, self.destinationColor)
 
             # Draw the path
             self.draw_path(path)
 
         # Draw the agent
         agent_rect = pygame.Rect(self.agent_pos[0] * GRID_SIZE, self.agent_pos[1] * GRID_SIZE, GRID_SIZE, GRID_SIZE)
-        if self.agent_pos[0] < 0 or self.agent_pos[0] >= usedWidth or self.agent_pos[1] < 0 or self.agent_pos[1] >= usedHeight:
+        if self.agent_pos[0] < 0 or self.agent_pos[0] >= self.usedWidth or self.agent_pos[1] < 0 or self.agent_pos[1] >= self.usedHeight:
             pass
         else:
-            pygame.draw.circle(self.screen, agentColor, agent_rect.center, GRID_SIZE // 2)
+            pygame.draw.circle(self.screen, self.agentColor, agent_rect.center, GRID_SIZE // 2)
 
         # Update the screen
         pygame.display.flip()
