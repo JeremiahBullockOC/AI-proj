@@ -58,3 +58,43 @@ def astar(maze, start, goal):
 
     # If we can't reach the goal node, return None
     return None
+
+def dfs(maze, start, goal):
+    # Initialize the stack and the visited set
+    stack = [(start, [start])]
+    visited = set()
+
+    # Loop through the stack
+    while stack:
+        current_node, path = stack.pop()
+
+        # Check if we've reached the goal node
+        if current_node == goal:
+            return path
+
+        # Add the current node to the visited set
+        visited.add(current_node)
+
+        # Loop through the neighbors of the current node in reverse order
+        for neighbor in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+            neighbor_node = (current_node[0] + neighbor[0], current_node[1] + neighbor[1])
+
+            # Check if the neighbor is inside the maze, not a wall, and not visited
+            if (
+                neighbor_node[0] >= 0 and neighbor_node[0] < len(maze[0]) and
+                neighbor_node[1] >= 0 and neighbor_node[1] < len(maze) and
+                maze[neighbor_node[1]][neighbor_node[0]] == 0 and
+                neighbor_node not in visited
+            ):
+                # Push the neighbor node and path to the stack
+                stack.append((neighbor_node, path + [neighbor_node]))
+
+    # If we can't reach the goal node, return None
+    return None
+
+
+
+
+def ucs(maze, start, goal):
+    return
+

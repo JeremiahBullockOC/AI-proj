@@ -17,6 +17,7 @@ class Game:
         choice = Choices()
         choice.run() 
 
+        
         # Get user choices
         self.theme = choice.getTheme()
         self.control = choice.getControl()
@@ -39,8 +40,6 @@ class Game:
 
 
     def handle_choices(self):
-
-        global automated
 
 
         if(self.theme.casefold() == 'ocean'):
@@ -162,7 +161,10 @@ class Game:
 
         if(self.automated or self.assisted):
              # Find the path from the agent to the goal grid
-            path = astar(self.usedMaze, self.agent_pos, self.destinationPos)
+            if(self.algorithm == 'astar'):
+                path = astar(self.usedMaze, self.agent_pos, self.destinationPos)
+            elif(self.algorithm == 'dfs'):
+                path = dfs(self.usedMaze, self.agent_pos, self.destinationPos)
 
             # Draw the path
             self.draw_path(path)

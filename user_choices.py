@@ -63,7 +63,9 @@ class Choices:
             algorithmButtons.extend([self.astarButton, self.dfsButton, self.ucsButton])
             mazeButtons.extend([self.smallMazeButton, self.bigMazeButton])
             themeButtons.extend([self.basicButton, self.retroButton, self.oceanButton])
-            returnButtons.append(self.returnButton)
+            
+            # TODO Fix the return function
+            #returnButtons.append(self.returnButton)
     def returnFunc(self):
         global state
         global clicked
