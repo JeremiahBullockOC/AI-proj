@@ -26,6 +26,7 @@ class Game:
         self.control = choice.getControl()
         self.algorithm = choice.getAlgorithm()
         self.maze_size = choice.getMaze()
+        
 
         self.handle_choices()
 
@@ -71,7 +72,18 @@ class Game:
         if(self.maze_size.casefold() == 'big'):
             self.usedMaze = big_maze
             self.usedWidth = len(big_maze[0])
-            self.usedHeight = len(big_maze)   
+            self.usedHeight = len(big_maze)
+        elif(self.maze_size.__contains__('random')):
+            if(self.maze_size.__contains__('big')):
+                self.usedMaze = gen_double_maze(20, 20)
+            else:
+                self.usedMaze = gen_double_maze(10, 10)
+            self.usedWidth = len(self.usedMaze[0])
+            self.usedHeight = len(self.usedMaze)
+            for row in self.usedMaze:
+                for cell in row:
+                    print('#' if cell else ' ', end='')
+                print()
         else:
             self.usedMaze = maze
             self.usedWidth = len(maze[0])
@@ -90,7 +102,7 @@ class Game:
         else:
             self.automated = False
 
-        if(self.algorithm.casefold() == ''):
+        if(self.algorithm.casefold() == 'unassisted'):
             self.assisted = False
         else:
             self.assisted = True
@@ -173,7 +185,6 @@ class Game:
                 path = bfs(self.usedMaze, self.agent_pos, self.destinationPos)
             elif(self.algorithm == 'ucs'):
                 path = ucs(self.usedMaze, self.agent_pos, self.destinationPos)
-
             # Draw the path
             self.draw_path(path)
 

@@ -43,25 +43,27 @@ class Choices:
             # Define the game loop
             self.running = True
 
-            self.automateButton = Button('Automated', 30, 30, 300, 80, 'Automated', lambda: self.controlClick(self.automateButton))
-            self.manualButton = Button('Manual', 30, 130, 300, 80, 'Manual', lambda: self.controlClick(self.manualButton))
-            self.astarButton = Button('astar', 30, 30, 300, 80, 'A* Algorithm', lambda: self.algoClick(self.astarButton))
-            self.dfsButton = Button('dfs', 30, 130, 300, 80, 'DFS Algorithm', lambda: self.algoClick(self.dfsButton))
-            self.bfsButton = Button('bfs', 30, 230, 300, 80, 'BFS Algorithm', lambda: self.algoClick(self.bfsButton))
-            self.ucsButton = Button('ucs', 30, 330, 300, 80, 'UCS Algorithm', lambda: self.algoClick(self.ucsButton))
-            self.returnButton = Button('', 30, 430, 300, 80, 'Return', lambda: self.returnFunc)
-            self.assistedButton = Button('assisted', 30, 30, 300, 80, 'Path Assisted', lambda: self.assistClick(self.assistedButton))
-            self.unassistedButton = Button('unassisted', 30, 130, 300, 80, 'No Assistance', lambda: self.assistClick(self.unassistedButton))
-            self.basicButton = Button('basic', 30, 30, 300, 80, 'Basic Theme', lambda: self.themeClick(self.basicButton))
-            self.retroButton = Button('retro', 30, 130, 300, 80, 'Retro Theme', lambda: self.themeClick(self.retroButton))
-            self.oceanButton = Button('ocean', 30, 230, 300, 80, 'Ocean Theme', lambda: self.themeClick(self.oceanButton))
-            self.smallMazeButton = Button('small maze', 30, 30, 300, 80, 'Small Maze', lambda: self.mazeClick(self.smallMazeButton))
-            self.bigMazeButton = Button('big maze', 30, 130, 300, 80, 'Big Maze', lambda: self.mazeClick(self.bigMazeButton))
+            self.automateButton = Button('Automated', 30, 30, 375, 80, 'Automated', lambda: self.controlClick(self.automateButton))
+            self.manualButton = Button('Manual', 30, 130, 375, 80, 'Manual', lambda: self.controlClick(self.manualButton))
+            self.astarButton = Button('astar', 30, 30, 375, 80, 'A* Algorithm', lambda: self.algoClick(self.astarButton))
+            self.dfsButton = Button('dfs', 30, 130, 375, 80, 'DFS Algorithm', lambda: self.algoClick(self.dfsButton))
+            self.bfsButton = Button('bfs', 30, 230, 375, 80, 'BFS Algorithm', lambda: self.algoClick(self.bfsButton))
+            self.ucsButton = Button('ucs', 30, 330, 375, 80, 'UCS Algorithm', lambda: self.algoClick(self.ucsButton))
+            self.returnButton = Button('', 30, 430, 375, 80, 'Return', lambda: self.returnFunc)
+            self.assistedButton = Button('assisted', 30, 30, 375, 80, 'Path Assisted', lambda: self.assistClick(self.assistedButton))
+            self.unassistedButton = Button('unassisted', 30, 130, 375, 80, 'No Assistance', lambda: self.assistClick(self.unassistedButton))
+            self.basicButton = Button('basic', 30, 30, 375, 80, 'Basic Theme', lambda: self.themeClick(self.basicButton))
+            self.retroButton = Button('retro', 30, 130, 375, 80, 'Retro Theme', lambda: self.themeClick(self.retroButton))
+            self.oceanButton = Button('ocean', 30, 230, 375, 80, 'Ocean Theme', lambda: self.themeClick(self.oceanButton))
+            self.smallMazeButton = Button('small maze', 30, 30, 375, 80, 'Small Maze', lambda: self.mazeClick(self.smallMazeButton))
+            self.smallRandomMazeButton = Button('small random maze', 30, 130, 375, 80, 'Small Random Maze', lambda: self.mazeClick(self.smallRandomMazeButton))
+            self.bigMazeButton = Button('big maze', 30, 230, 375, 80, 'Big Maze', lambda: self.mazeClick(self.bigMazeButton))
+            self.bigRandomMazeButton = Button('big random maze', 30, 330, 375, 80, 'Big Random Maze', lambda: self.mazeClick(self.bigRandomMazeButton))
 
             controlButtons.extend([self.automateButton, self.manualButton])
             assistanceButtons.extend([self.assistedButton, self.unassistedButton])
             algorithmButtons.extend([self.astarButton, self.dfsButton, self.bfsButton, self.ucsButton])
-            mazeButtons.extend([self.smallMazeButton, self.bigMazeButton])
+            mazeButtons.extend([self.smallMazeButton, self.smallRandomMazeButton, self.bigMazeButton, self.bigRandomMazeButton])
             themeButtons.extend([self.basicButton, self.retroButton, self.oceanButton])
             
             # TODO Fix the return function
@@ -147,9 +149,13 @@ class Choices:
         clicked = True
         if button.buttonVal.casefold() == 'big maze':
             maze_size = 'big'
-        if button.buttonVal.casefold() == 'small maze':
+        elif button.buttonVal.casefold() == 'big random maze':
+            maze_size = 'big random'        
+        elif button.buttonVal.casefold() == 'small maze':
             maze_size = 'small'
-
+        elif button.buttonVal.casefold() == 'small random maze':
+            maze_size = 'small random'
+            
         global state
         if(maze_size != ''):
             state = 'State 4'
