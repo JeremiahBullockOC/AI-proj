@@ -82,12 +82,15 @@ FONT_SIZE = 50
 
 
 def gen_double_maze(width, height):
-     return expand_maze(generate_maze(width//2, height//2), width, height)
+     results = generate_maze(width//2, height//2)
+     temp_maze, end_point = results
+     actual_endpoint = end_point[0] * 2, end_point[1] * 2
+     return expand_maze(temp_maze, width, height), actual_endpoint
 
 def generate_maze(width, height):
     # Initialize the maze grid
     genmaze = [[1] * width for _ in range(height)]
-    
+    end = 0,0
     # Recursive function to carve the maze
     def carve_maze(x, y):
         genmaze[y][x] = 0
@@ -97,11 +100,12 @@ def generate_maze(width, height):
         
         for dx, dy in directions:
             nx, ny = x + dx, y + dy
-            
             if nx >= 0 and nx < width and ny >= 0 and ny < height:
                 if genmaze[ny][nx] == 1:
                     mx, my = x + dx // 2, y + dy // 2
                     genmaze[my][mx] = 0
+                    nonlocal end
+                    end = nx, ny
                     carve_maze(nx, ny)
     
     # Start carving the maze from a random starting point
@@ -109,7 +113,7 @@ def generate_maze(width, height):
     start_y = 0
     carve_maze(start_x, start_y)
     
-    return genmaze
+    return genmaze, end
 
 def expand_maze(maze, width, height):
         newmaze = [[1] * width for _ in range(height)]
