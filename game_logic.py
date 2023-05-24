@@ -3,11 +3,13 @@ import time
 from config import *
 from path_planning import *
 from user_choices import Choices
+from asp import *
 
 
 # Initialize pygame
 pygame.init()
 
+PIT_IMAGE = pygame.image.load("pit.jpg")
 
 # Define the font
 
@@ -81,15 +83,16 @@ class Game:
             self.usedWidth = len(self.usedMaze[0])
             self.usedHeight = len(self.usedMaze)
             self.destinationPos 
-            for row in self.usedMaze:
-                for cell in row:
-                    print('#' if cell else ' ', end='')
-                print()
         else:
             self.usedMaze = maze
             self.usedWidth = len(maze[0])
             self.usedHeight = len(maze)
 
+        self.usedMaze = solve_nqueens(self.usedMaze)
+        for row in self.usedMaze:
+            for cell in row:
+                    print('#' if cell else ' ', end='')
+            print()
         # Editing window height
         self.windowWidth = GRID_SIZE * self.usedWidth
         self.windowHeight = GRID_SIZE * self.usedHeight
@@ -138,25 +141,28 @@ class Game:
                 rect2 = pygame.Rect(x2 * GRID_SIZE, y2 * GRID_SIZE, GRID_SIZE, GRID_SIZE)
                 pygame.draw.line(self.screen, self.pathColor, rect1.center, rect2.center, 10)
 
+    def validMove(self, new_pos):
+        is_valid = self.usedMaze[new_pos[1]][new_pos[0]] == 0 or self.usedMaze[new_pos[1]][new_pos[0]] == 2
+        return is_valid
+
     def moveUp(self):
         new_pos = (self.agent_pos[0], self.agent_pos[1] - 1)
-        if new_pos[1] >= 0 and not self.usedMaze[new_pos[1]][new_pos[0]]:
+        if new_pos[1] >= 0 and self.validMove(new_pos):
             self.agent_pos = new_pos
 
     def moveDown(self):
         new_pos = (self.agent_pos[0], self.agent_pos[1] + 1)
-        if new_pos[1] < self.usedHeight and not self.usedMaze[new_pos[1]][new_pos[0]]:
+        if new_pos[1] < self.usedHeight and self.validMove(new_pos):
             self.agent_pos = new_pos
     def moveRight(self):
         new_pos = (self.agent_pos[0] + 1, self.agent_pos[1])
-        if new_pos[0] < self.usedWidth and not self.usedMaze[new_pos[1]][new_pos[0]]:
+        if new_pos[0] < self.usedWidth and self.validMove(new_pos):
             self.agent_pos = new_pos
     def moveLeft(self):
         new_pos = (self.agent_pos[0] - 1, self.agent_pos[1])
-        if new_pos[0] >= 0 and not self.usedMaze[new_pos[1]][new_pos[0]]:
+        if new_pos[0] >= 0 and self.validMove(new_pos):
             self.agent_pos = new_pos
     
-
     def draw(self):
         # Draw the grid
         self.screen.fill(self.backgroundColor)
@@ -166,6 +172,11 @@ class Game:
                 pygame.draw.rect(self.screen, self.gridColor, rect, 1)
                 if self.usedMaze[y][x] == 1:
                     pygame.draw.rect(self.screen, self.wallColor, rect)
+                elif self.usedMaze[y][x] == 2:
+                    # self.screen.blit(PIT_IMAGE, rect)
+                    pygame.draw.rect(self.screen, self.wallColor, rect)
+                    pygame.draw.circle(self.screen, self.backgroundColor, rect.center, GRID_SIZE // 2)
+
                 if self.destinationPos[0] == x and self.destinationPos[1] == y:
                     if self.destinationPos[0] < 0 or self.destinationPos[0] >= self.usedWidth or self.destinationPos[1] < 0 or self.destinationPos[1] >= self.usedHeight:
                         continue
@@ -206,6 +217,12 @@ class Game:
             self.agent_pos = path[1] 
             time.sleep(0.2)
 
+    def handle_map_events(self):
+        if self.usedMaze[self.agent_pos[1]][self.agent_pos[0]] > 1:
+            if self.usedMaze[self.agent_pos[1]][self.agent_pos[0]] == 2:
+                self.agent_pos = AGENT_POS
+                self.draw()
+
     def run(self):
         while self.running:
             # Handle events
@@ -214,5 +231,7 @@ class Game:
             # Draw the game
             self.draw()
 
+            # Handle pits, chests and traps etc.
+            self.handle_map_events()
         # Quit pygame
         pygame.quit()

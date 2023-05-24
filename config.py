@@ -43,6 +43,7 @@ CHOICES_WIDTH, CHOICES_HEIGHT = 500, 600
 
 PURPLE = (150, 0, 128)
 
+
 # Define the colors
 
 #BASIC - Black background, white grid, grey obstacle, yellow player, purple path, blue destination
