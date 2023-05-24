@@ -9,8 +9,6 @@ from asp import *
 # Initialize pygame
 pygame.init()
 
-PIT_IMAGE = pygame.image.load("pit.jpg")
-
 # Define the font
 
 class Game:

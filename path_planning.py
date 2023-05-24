@@ -42,7 +42,7 @@ def astar(maze, start, goal):
             neighbor_node = (current_node[0] + neighbor[0], current_node[1] + neighbor[1])
 
             # Check if the neighbor is inside the maze and not in the closed list
-            if neighbor_node[0] < 0 or neighbor_node[0] >= len(maze[0]) or neighbor_node[1] < 0 or neighbor_node[1] >= len(maze) or maze[neighbor_node[1]][neighbor_node[0]] == 1 or neighbor_node in closed_list:
+            if neighbor_node[0] < 0 or neighbor_node[0] >= len(maze[0]) or neighbor_node[1] < 0 or neighbor_node[1] >= len(maze) or maze[neighbor_node[1]][neighbor_node[0]] > 0 or neighbor_node in closed_list:
                 continue
 
             # Calculate the cost of the neighbor node
@@ -126,7 +126,7 @@ def bfs(maze, start, goal):
             neighbor_node = (current_node[0] + neighbor[0], current_node[1] + neighbor[1])
 
             # Check if the neighbor is inside the maze and not visited
-            if neighbor_node[0] < 0 or neighbor_node[0] >= len(maze[0]) or neighbor_node[1] < 0 or neighbor_node[1] >= len(maze) or maze[neighbor_node[1]][neighbor_node[0]] == 1 or neighbor_node in visited:
+            if neighbor_node[0] < 0 or neighbor_node[0] >= len(maze[0]) or neighbor_node[1] < 0 or neighbor_node[1] >= len(maze) or maze[neighbor_node[1]][neighbor_node[0]] > 0 or neighbor_node in visited:
                 continue
 
             # Add the neighbor to the queue and mark it as visited
@@ -175,7 +175,7 @@ def ucs(maze, start, goal):
             if (
                 neighbor_node[0] < 0 or neighbor_node[0] >= len(maze[0]) or
                 neighbor_node[1] < 0 or neighbor_node[1] >= len(maze) or
-                maze[neighbor_node[1]][neighbor_node[0]] == 1 or
+                maze[neighbor_node[1]][neighbor_node[0]] > 0 or
                 neighbor_node in closed_list
             ):
                 continue
