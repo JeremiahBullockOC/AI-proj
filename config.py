@@ -1,4 +1,5 @@
 import random
+from path_planning import astar
 
 # Define the maze layout
 maze = [[0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
@@ -26,11 +27,11 @@ big_maze = [[0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
         [0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0],
-        [1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0],
-        [0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0],
+        [0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0],
+        [1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0],
         [0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0],
         [0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0],
-        [0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0],
+        [0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0],
         [0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0]]
 
 # Define the grid size and the window size
@@ -91,7 +92,6 @@ def gen_double_maze(width, height):
 def generate_maze(width, height):
     # Initialize the maze grid
     genmaze = [[1] * width for _ in range(height)]
-    end = 0,0
     # Recursive function to carve the maze
     def carve_maze(x, y):
         genmaze[y][x] = 0
@@ -105,8 +105,6 @@ def generate_maze(width, height):
                 if genmaze[ny][nx] == 1:
                     mx, my = x + dx // 2, y + dy // 2
                     genmaze[my][mx] = 0
-                    nonlocal end
-                    end = nx, ny
                     carve_maze(nx, ny)
     
     # Start carving the maze from a random starting point
@@ -114,6 +112,9 @@ def generate_maze(width, height):
     start_y = 0
     carve_maze(start_x, start_y)
     
+    path = dfs_longest_path(genmaze, (0,0))
+    end = path[-1]
+
     return genmaze, end
 
 def expand_maze(maze, width, height):
@@ -128,35 +129,17 @@ def expand_maze(maze, width, height):
 
         return newmaze
 
-
-
-# def generate_maze(width, height, start):
-#     # Initialize the maze grid
-#     genmaze = [[1] * width for _ in range(height)]
+def dfs_longest_path(maze, start):
+    stack = [(start, [start])]
+    longest_path = []
     
-#     # Set starting and ending points
-#     start_x, start_y = start
-#     end = 0,0
-#     genmaze[start_y][start_x] = 0
+    while stack:
+        (x, y), path = stack.pop()
+        if len(path) > len(longest_path):
+            longest_path = path
+        for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+            next_x, next_y = x + dx, y + dy
+            if 0 <= next_x < len(maze) and 0 <= next_y < len(maze[0]) and maze[next_x][next_y] == 0 and (next_x, next_y) not in path:
+                stack.append(((next_x, next_y), path + [(next_x, next_y)]))
     
-#     # Recursive function to carve the maze
-#     def carve_maze(x, y):
-#         directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
-#         random.shuffle(directions)
-        
-#         for dx, dy in directions:
-#             nx, ny = x + dx, y + dy
-#             mx, my = x + 2 * dx, y + 2 * dy
-#             if mx >= 0 and mx < width and my >= 0 and my < height:
-#                 if genmaze[my][mx] == 1:
-#                     genmaze[my][mx] = 0
-#                     genmaze[ny][nx] = 0
-#                     nonlocal end
-#                     end = nx, ny
-#                     carve_maze(nx, ny)
-    
-#     # Start carving the maze
-#     carve_maze(start_x, start_y)
-    
-#     return genmaze
-
+    return longest_path
