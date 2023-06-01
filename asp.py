@@ -3,10 +3,11 @@ from config import *
 import copy
 
 def on_model(model, locations):
+    print('In on_model')
     for atom in model.symbols(atoms=True):
         print(atom)
 
-        if atom.name == 'q':
+        if atom.name == 'pit':
             row = atom.arguments[0].number
             col = atom.arguments[1].number
             locations[row - 1][col - 1] = 2
@@ -20,22 +21,34 @@ def solve_nqueens(locations):
     program = ''
 
     for i in range(n):
-        program += f'row({i}).'
+        program += f'row({i}). '
     program += '\n'
     for i in range(n):
-        program += f'col({i}).'
+        program += f'col({i}). '
     program += '\n'
+    for x_index in range(n):
+        for y_index in range(n):
+            if(locations[x_index][y_index] != 0):
+                program += f'illegal_location({x_index},{y_index}). '
+    program += '\n'
+    program += 'pit(X, Y) :- row(X), col(Y), illegal_location(X, Y).\n'
+    program += 'has_pit(X) :- pit(X, Y), row(X), col(Y).\n'
+    program += ':- row(X), not has_pit(X).\n'
+    # program += ':- q(0,0).\n'
+    # program += 'not_q(X, Y) :- not q(X, Y), row(X), col(Y).\n'
+    # program += 'q(X, Y):- row(X), col(Y), not not_q(X, Y), not illegal_location(X, Y).\n'
+    # program += 'has_q(X) :- q(X, Y), row(X), col(Y).\n'
+    # program += ':- row(X), not has_q(X).\n'
+    # program += ':- q(X, Y), q(X, Y+1).\n'
+    # program += ':- q(X, Y), q(X+1, Y+1).\n'
+    # program += ':- q(X, Y), q(X+1, Y).\n'
+    # program += ':- q(X, Y), q(X+1, Y-1).\n'
+    # program += ':- q(X, Y), q(X, Y-1).\n'
+    # program += ':- q(X, Y), q(X-1, Y-1).\n'
+    # program += ':- q(X, Y), q(X-1, Y).\n'
+    # program += ':- q(X, Y), q(X-1, Y+1).\n'
 
-    program += 'not_q(X, Y) :- not q(X, Y), row(X), col(Y).\n'
-    program += 'q(X, Y) :- row(X), col(Y), not not_q(X, Y).\n'
-    program += 'not_q(Z, Y) :- q(X, Y), row(X), col(Y), row(Z), X != Z.\n'
-    program += 'not_q(X, Z) :- q(X, Y), row(X), col(Y), col(Z), Y != Z.\n'
-    program += ':- row(X1), row(X2), col(Y1), col(Y2), X1 < X2, Y1 < Y2, q(X1, Y1), q(X2, Y2), X2 - X1 == Y2 - Y1.\n'
-    program += ':- row(X1), row(X2), col(Y1), col(Y2), X1 < X2, Y1 > Y2, q(X1, Y1), q(X2, Y2), X2 - X1 == Y1 - Y2.\n'
-    program += 'has_q(X) :- q(X, Y), row(X), col(Y).\n'
-    program += ':- row(X), not has_q(X).\n'
-    program += ':- q(0,0).\n'
-
+   
     print(program)
     # Create a deep copy of the locations array
     locations_copy = copy.deepcopy(locations)
@@ -52,15 +65,14 @@ def solve_nqueens(locations):
 
     # Solve the program
     with control.solve(yield_=True) as handle:
+        print('Starting model call')
         for model in handle:
             final_locations = on_model(model, locations_copy)
-            # access the atoms of the model
-            atoms = set(model.symbols(atoms=True))
-            print("Atoms: {}".format(atoms))
 
-    for row in final_locations:
-        for cell in row:
-            print(cell, end='')
-        print()
+    # for row in final_locations:
+    #     for cell in row:
+    #         print(cell, end='')
+    #     print()
 
     return locations_copy
+
