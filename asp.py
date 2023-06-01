@@ -26,15 +26,23 @@ def solve_nqueens(locations):
     program = ''
 
     for i in range(n):
-        program += f'row({i}). '
+        program += f'row({i+1}). '
     program += '\n'
     for i in range(n):
-        program += f'col({i}). '
+        program += f'col({i+1}). '
     program += '\n'
+    # Programming in walls
     for y_index in range(n):
         for x_index in range(n):
             if(locations[x_index][y_index] != 0):
                 program += f'illegal_location({x_index+1},{y_index+1}). '
+    #Making maze boundaries into illegal locations
+    for index in range(n):
+        program += f'illegal_location({0},{index+1}). '
+        program += f'illegal_location({n+1},{index+1}). '
+        program += f'illegal_location({index+1},{0}). '
+        program += f'illegal_location({index+1},{n+1}). '
+
     program += '\n'
     # Testing
     program += 'not_pit(X, Y) :- not pit(X, Y), row(X), col(Y).\n'
@@ -43,11 +51,11 @@ def solve_nqueens(locations):
     program += ':- row(X), not has_pit(X).\n'
     program += ':- pit(1,1).\n'
     # Below is temporarily working
-    program += ':- pit(X,Y), pit(X+1, Y).\n'
-    program += ':- pit(X,Y), pit(X, Y+1).\n'
-    program += ':- pit(X,Y), pit(X+1, Y+1).\n'
-    program += ':- pit(X,Y), pit(X-1, Y-1).\n'
-    program += ':- pit(X,Y), pit(X+1, Y-1).\n'
+    # program += ':- pit(X,Y), pit(X+1, Y).\n'
+    # program += ':- pit(X,Y), pit(X, Y+1).\n'
+    # program += ':- pit(X,Y), pit(X+1, Y+1).\n'
+    # program += ':- pit(X,Y), pit(X-1, Y-1).\n'
+    # program += ':- pit(X,Y), pit(X+1, Y-1).\n'
 
     # Good code above
 
