@@ -14,6 +14,11 @@ def on_model(model, locations):
     return locations
 
 def solve_nqueens(locations):
+    for row in locations:
+        for cell in row:
+            print(cell, end='')
+        print()
+
     n = len(locations[0])
     control = clingo.Control()
 
@@ -26,27 +31,20 @@ def solve_nqueens(locations):
     for i in range(n):
         program += f'col({i}). '
     program += '\n'
-    for x_index in range(n):
-        for y_index in range(n):
+    for y_index in range(n):
+        for x_index in range(n):
             if(locations[x_index][y_index] != 0):
                 program += f'illegal_location({x_index},{y_index}). '
     program += '\n'
+    # program += 'pit(X, Y) :- row(X), col(Y).\n'
+    # program += ':- pit(X, Y), illegal_location(X, Y).\n'
+    # Semi working
     program += 'pit(X, Y) :- row(X), col(Y), illegal_location(X, Y).\n'
     program += 'has_pit(X) :- pit(X, Y), row(X), col(Y).\n'
     program += ':- row(X), not has_pit(X).\n'
-    # program += ':- q(0,0).\n'
-    # program += 'not_q(X, Y) :- not q(X, Y), row(X), col(Y).\n'
-    # program += 'q(X, Y):- row(X), col(Y), not not_q(X, Y), not illegal_location(X, Y).\n'
-    # program += 'has_q(X) :- q(X, Y), row(X), col(Y).\n'
-    # program += ':- row(X), not has_q(X).\n'
-    # program += ':- q(X, Y), q(X, Y+1).\n'
-    # program += ':- q(X, Y), q(X+1, Y+1).\n'
-    # program += ':- q(X, Y), q(X+1, Y).\n'
-    # program += ':- q(X, Y), q(X+1, Y-1).\n'
-    # program += ':- q(X, Y), q(X, Y-1).\n'
-    # program += ':- q(X, Y), q(X-1, Y-1).\n'
-    # program += ':- q(X, Y), q(X-1, Y).\n'
-    # program += ':- q(X, Y), q(X-1, Y+1).\n'
+    program += ':- pit(0,0).\n'
+
+    # Good code above
 
    
     print(program)
@@ -69,10 +67,7 @@ def solve_nqueens(locations):
         for model in handle:
             final_locations = on_model(model, locations_copy)
 
-    # for row in final_locations:
-    #     for cell in row:
-    #         print(cell, end='')
-    #     print()
+
 
     return locations_copy
 
