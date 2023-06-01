@@ -34,15 +34,20 @@ def solve_nqueens(locations):
     for y_index in range(n):
         for x_index in range(n):
             if(locations[x_index][y_index] != 0):
-                program += f'illegal_location({x_index},{y_index}). '
+                program += f'illegal_location({x_index+1},{y_index+1}). '
     program += '\n'
-    # program += 'pit(X, Y) :- row(X), col(Y).\n'
-    # program += ':- pit(X, Y), illegal_location(X, Y).\n'
-    # Semi working
-    program += 'pit(X, Y) :- row(X), col(Y), illegal_location(X, Y).\n'
+    # Testing
+    program += 'not_pit(X, Y) :- not pit(X, Y), row(X), col(Y).\n'
+    program += 'pit(X, Y) :- row(X), col(Y), not not_pit(X, Y), not illegal_location(X, Y).\n'
     program += 'has_pit(X) :- pit(X, Y), row(X), col(Y).\n'
     program += ':- row(X), not has_pit(X).\n'
-    program += ':- pit(0,0).\n'
+    program += ':- pit(1,1).\n'
+    # Below is temporarily working
+    program += ':- pit(X,Y), pit(X+1, Y).\n'
+    program += ':- pit(X,Y), pit(X, Y+1).\n'
+    program += ':- pit(X,Y), pit(X+1, Y+1).\n'
+    program += ':- pit(X,Y), pit(X-1, Y-1).\n'
+    program += ':- pit(X,Y), pit(X+1, Y-1).\n'
 
     # Good code above
 
