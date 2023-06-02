@@ -80,13 +80,13 @@ class Game:
                 self.usedMaze, self.destinationPos = gen_double_maze(10, 10)
             self.usedWidth = len(self.usedMaze[0])
             self.usedHeight = len(self.usedMaze)
-            self.destinationPos 
         else:
             self.usedMaze = maze
             self.usedWidth = len(maze[0])
             self.usedHeight = len(maze)
-
-        self.usedMaze = solve_nqueens(self.usedMaze)
+        if(not self.maze_size.__contains__('random')):
+            self.destinationPos = (self.usedWidth-1, self.usedHeight-1)
+        self.usedMaze = solve_nqueens(self.usedMaze, self.destinationPos)
         for row in self.usedMaze:
             for cell in row:
                     print('#' if cell else ' ', end='')
@@ -94,8 +94,7 @@ class Game:
         # Editing window height
         self.windowWidth = GRID_SIZE * self.usedWidth
         self.windowHeight = GRID_SIZE * self.usedHeight
-        if(not self.maze_size.__contains__('random')):
-            self.destinationPos = (self.usedWidth-1, self.usedHeight-1)
+
 
         # Checking if path assisted and what algorithm
 

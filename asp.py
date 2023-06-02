@@ -13,7 +13,7 @@ def on_model(model, locations):
             locations[row - 1][col - 1] = 2
     return locations
 
-def solve_nqueens(locations):
+def solve_nqueens(locations, destination):
     # for row in locations:
     #     for cell in row:
     #         print(cell, end='')
@@ -49,6 +49,7 @@ def solve_nqueens(locations):
     program += 'has_pit(X) :- pit(X, Y), row(X), col(Y).\n'
     program += ':- row(X), not has_pit(X).\n'
     program += ':- pit(1,1).\n'
+    program += f':- pit({destination[1]+1}, {destination[0]+1}).\n'
     program += 'not_block(X,Y) :- not pit(X, Y), not illegal_location(X, Y), row(X), col(Y).\n'
     program += 'block(X, Y) :- row(X), col(Y), not not_block(X, Y).\n'
     program += ':- pit(X,Y), block(X, Y+1), block(X, Y-1).\n'
@@ -59,6 +60,12 @@ def solve_nqueens(locations):
     program += ':- pit(X,Y), block(X-1, Y), block(X+1, Y+1).\n'
     program += ':- pit(X,Y), block(X+1, Y), block(X-1, Y-1).\n'
     program += ':- pit(X,Y), block(X+1, Y), block(X-1, Y+1).\n'
+
+    #New
+    program += ':- pit(X,Y), block(X, Y-1), block(X-1, Y+1).\n'
+    program += ':- pit(X,Y), block(X, Y-1), block(X+1, Y+1).\n'
+    program += ':- pit(X,Y), block(X, Y+1), block(X-1, Y-1).\n'
+    program += ':- pit(X,Y), block(X, Y+1), block(X+1, Y-1).\n'
 
     # Below is temporarily working
     # program += ':- pit(X,Y), pit(X+1, Y).\n'
