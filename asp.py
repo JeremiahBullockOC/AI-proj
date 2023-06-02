@@ -50,7 +50,7 @@ def solve_nqueens(locations, destination):
     program += ':- row(X), not has_pit(X).\n'
     program += ':- pit(1,1).\n'
     program += f':- pit({destination[1]+1}, {destination[0]+1}).\n'
-    program += 'not_block(X,Y) :- not pit(X, Y), not illegal_location(X, Y), row(X), col(Y).\n'
+    program += 'not_block(X,Y) :- not pit(X, Y), not illegal_location(X, Y), not block(X, Y), row(X), col(Y).\n'
     program += 'block(X, Y) :- row(X), col(Y), not not_block(X, Y).\n'
     program += ':- pit(X,Y), block(X, Y+1), block(X, Y-1).\n'
     program += ':- pit(X,Y), block(X+1, Y), block(X-1, Y).\n'
