@@ -14,15 +14,14 @@ def on_model(model, locations):
     return locations
 
 def solve_nqueens(locations):
-    for row in locations:
-        for cell in row:
-            print(cell, end='')
-        print()
+    # for row in locations:
+    #     for cell in row:
+    #         print(cell, end='')
+    #     print()
 
     n = len(locations[0])
     control = clingo.Control()
 
-    # Define the N-Queens program
     program = ''
 
     for i in range(n):
@@ -32,10 +31,10 @@ def solve_nqueens(locations):
         program += f'col({i+1}). '
     program += '\n'
     # Programming in walls
-    for y_index in range(n):
-        for x_index in range(n):
-            if(locations[x_index][y_index] != 0):
-                program += f'illegal_location({x_index+1},{y_index+1}). '
+    for col in range(n):
+        for row in range(n):
+            if(locations[row][col] != 0):
+                program += f'illegal_location({row+1},{col+1}). '
     #Making maze boundaries into illegal locations
     for index in range(n):
         program += f'illegal_location({0},{index+1}). '
@@ -50,6 +49,17 @@ def solve_nqueens(locations):
     program += 'has_pit(X) :- pit(X, Y), row(X), col(Y).\n'
     program += ':- row(X), not has_pit(X).\n'
     program += ':- pit(1,1).\n'
+    program += 'not_block(X,Y) :- not pit(X, Y), not illegal_location(X, Y), row(X), col(Y).\n'
+    program += 'block(X, Y) :- row(X), col(Y), not not_block(X, Y).\n'
+    program += ':- pit(X,Y), block(X, Y+1), block(X, Y-1).\n'
+    program += ':- pit(X,Y), block(X+1, Y), block(X-1, Y).\n'
+    program += ':- pit(X,Y), block(X+1, Y+1), block(X-1, Y-1).\n'
+    program += ':- pit(X,Y), block(X-1, Y+1), block(X+1, Y-1).\n'
+    program += ':- pit(X,Y), block(X-1, Y), block(X+1, Y-1).\n'
+    program += ':- pit(X,Y), block(X-1, Y), block(X+1, Y+1).\n'
+    program += ':- pit(X,Y), block(X+1, Y), block(X-1, Y-1).\n'
+    program += ':- pit(X,Y), block(X+1, Y), block(X-1, Y+1).\n'
+
     # Below is temporarily working
     # program += ':- pit(X,Y), pit(X+1, Y).\n'
     # program += ':- pit(X,Y), pit(X, Y+1).\n'
@@ -75,10 +85,15 @@ def solve_nqueens(locations):
     control.register_observer(on_model_wrapper)
 
     # Solve the program
-    with control.solve(yield_=True) as handle:
-        print('Starting model call')
-        for model in handle:
-            final_locations = on_model(model, locations_copy)
+    try:
+        with control.solve(yield_=True) as handle:
+            print('Starting model call')
+            for model in handle:
+                print('In the for loop')
+                final_locations = on_model(model, locations_copy)
+    except clingo.SolveError as e:
+        print('No models found')
+        print(e)
 
 
 
