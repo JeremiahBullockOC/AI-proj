@@ -76,6 +76,9 @@ def solve_nqueens(locations, destination):
 
     # Good code above
 
+    # No pits adjacent.
+    # No pits between two walls
+    # No pits between a wall and a boundary
    
     print(program)
     # Create a deep copy of the locations array
