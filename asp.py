@@ -2,6 +2,7 @@ import clingo
 from config import *
 import copy
 
+
 def on_model(model, locations):
     print('In on_model')
     for atom in model.symbols(atoms=True):
@@ -14,35 +15,35 @@ def on_model(model, locations):
     return locations
 
 def solve_nqueens(locations, destination):
-    # for row in locations:
-    #     for cell in row:
-    #         print(cell, end='')
-    #     print()
 
     n = len(locations[0])
     control = clingo.Control()
 
     program = ''
 
+    #Defining the rows and cols in the maze
     for i in range(n):
         program += f'row({i+1}). '
     program += '\n'
     for i in range(n):
         program += f'col({i+1}). '
     program += '\n'
-    # Programming in walls
+
+    # Programming in maze walls
     for col in range(n):
         for row in range(n):
             if(locations[row][col] != 0):
                 program += f'illegal_location({row+1},{col+1}). '
+
     #Making maze boundaries into illegal locations
+    program += f'illegal_location({0},{0}). '
     for index in range(n):
         program += f'illegal_location({0},{index+1}). '
         program += f'illegal_location({n+1},{index+1}). '
         program += f'illegal_location({index+1},{0}). '
         program += f'illegal_location({index+1},{n+1}). '
-
     program += '\n'
+
     # Testing
     program += 'not_pit(X, Y) :- not pit(X, Y), row(X), col(Y).\n'
     program += 'pit(X, Y) :- row(X), col(Y), not not_pit(X, Y), not illegal_location(X, Y).\n'
@@ -52,35 +53,24 @@ def solve_nqueens(locations, destination):
     program += f':- pit({destination[1]+1}, {destination[0]+1}).\n'
     program += 'not_block(X,Y) :- not pit(X, Y), not illegal_location(X, Y), not block(X, Y), row(X), col(Y).\n'
     program += 'block(X, Y) :- row(X), col(Y), not not_block(X, Y).\n'
+
+    # Handles having 3 blocking cells in a line
     program += ':- pit(X,Y), block(X, Y+1), block(X, Y-1).\n'
     program += ':- pit(X,Y), block(X+1, Y), block(X-1, Y).\n'
     program += ':- pit(X,Y), block(X+1, Y+1), block(X-1, Y-1).\n'
     program += ':- pit(X,Y), block(X-1, Y+1), block(X+1, Y-1).\n'
+
+    # Handles 3 disjoint cells that still block
     program += ':- pit(X,Y), block(X-1, Y), block(X+1, Y-1).\n'
     program += ':- pit(X,Y), block(X-1, Y), block(X+1, Y+1).\n'
     program += ':- pit(X,Y), block(X+1, Y), block(X-1, Y-1).\n'
     program += ':- pit(X,Y), block(X+1, Y), block(X-1, Y+1).\n'
-
-    #New
     program += ':- pit(X,Y), block(X, Y-1), block(X-1, Y+1).\n'
     program += ':- pit(X,Y), block(X, Y-1), block(X+1, Y+1).\n'
     program += ':- pit(X,Y), block(X, Y+1), block(X-1, Y-1).\n'
     program += ':- pit(X,Y), block(X, Y+1), block(X+1, Y-1).\n'
-
-    # Below is temporarily working
-    # program += ':- pit(X,Y), pit(X+1, Y).\n'
-    # program += ':- pit(X,Y), pit(X, Y+1).\n'
-    # program += ':- pit(X,Y), pit(X+1, Y+1).\n'
-    # program += ':- pit(X,Y), pit(X-1, Y-1).\n'
-    # program += ':- pit(X,Y), pit(X+1, Y-1).\n'
-
-    # Good code above
-
-    # No pits adjacent.
-    # No pits between two walls
-    # No pits between a wall and a boundary
    
-    print(program)
+    # print(program)
     # Create a deep copy of the locations array
     locations_copy = copy.deepcopy(locations)
     control.add("base", [], program)
@@ -98,6 +88,12 @@ def solve_nqueens(locations, destination):
     try:
         with control.solve(yield_=True) as handle:
             print('Starting model call')
+            print('Exhausted: ' + str(handle.get().exhausted))
+            print('Interrupted: ' + str(handle.get().interrupted))
+            print('Unknown: ' + str(handle.get().unknown))
+            print('Satisfiable: ' + str(handle.get().satisfiable))
+
+
             for model in handle:
                 print('In the for loop')
                 final_locations = on_model(model, locations_copy)
