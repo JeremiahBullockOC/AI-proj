@@ -13,3 +13,12 @@ Update config file to have larger area.
 
 Add random obstacle class
     Ensure pathfind can handle random obstacles
+
+
+Oil slicks + regular slip chance
+
+Teleporter
+
+tweaking amounts of oil slicks and teleporters.
+
+A default option

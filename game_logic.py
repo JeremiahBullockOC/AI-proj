@@ -1,15 +1,23 @@
 import pygame
 import time
+from random_obstacles import *
 from config import *
 from path_planning import *
 from user_choices import Choices
 from asp import *
+from PIL import Image
+import numpy as np
+import sklearn
+
 
 
 # Initialize pygame
 pygame.init()
 
 # Define the font
+
+# TODO Add sklearn integration
+# How about map prediction. I.e. can see 3 square radius. Then rest of map is darkened and drawn using prediction
 
 class Game:
     def __init__(self):
@@ -30,6 +38,18 @@ class Game:
 
         self.handle_choices()
 
+        # Load the image using PIL
+        oil_image = Image.open('oil.jpg')
+        warp_image = Image.open('time-warp.jpg')
+
+        # Resize the image to the desired dimensions
+        oil_resized_image = oil_image.resize((GRID_SIZE, GRID_SIZE))
+        warp_resized_image = warp_image.resize((GRID_SIZE, GRID_SIZE))
+
+
+        # Convert the resized image to a Pygame surface
+        self.oil_resized_surface = pygame.surfarray.make_surface(np.array(oil_resized_image))
+        self.warp_resized_surface = pygame.surfarray.make_surface(np.array(warp_resized_image))
 
         # Set up the screen
         self.screen = pygame.display.set_mode((self.windowWidth, self.windowHeight))
@@ -37,6 +57,7 @@ class Game:
 
         # Define the agent starting position
         self.agent_pos = AGENT_POS
+        self.agent_prior_pos = AGENT_POS
 
         # Define the game loop
         self.running = True
@@ -86,11 +107,15 @@ class Game:
             self.usedHeight = len(maze)
         if(not self.maze_size.__contains__('random')):
             self.destinationPos = (self.usedWidth-1, self.usedHeight-1)
-        self.usedMaze = solve_nqueens(self.usedMaze, self.destinationPos)
+        self.usedMaze = create_pits(self.usedMaze, self.destinationPos)
         for row in self.usedMaze:
             for cell in row:
                     print('#' if cell else ' ', end='')
             print()
+
+        # Adding oil slicks and teleporters
+        self.usedMaze = create_oil_slick(self.usedMaze, self.destinationPos, 0.05)
+        self.usedMaze, self.teleporters = create_teleporter(self.usedMaze, (self.usedWidth / 5))  
         # Editing window height
         self.windowWidth = GRID_SIZE * self.usedWidth
         self.windowHeight = GRID_SIZE * self.usedHeight
@@ -139,25 +164,29 @@ class Game:
                 pygame.draw.line(self.screen, self.pathColor, rect1.center, rect2.center, 10)
 
     def validMove(self, new_pos):
-        is_valid = self.usedMaze[new_pos[1]][new_pos[0]] == 0 or self.usedMaze[new_pos[1]][new_pos[0]] == 2
+        is_valid = self.usedMaze[new_pos[1]][new_pos[0]] != 1
         return is_valid
 
     def moveUp(self):
         new_pos = (self.agent_pos[0], self.agent_pos[1] - 1)
         if new_pos[1] >= 0 and self.validMove(new_pos):
+            self.agent_prior_pos = self.agent_pos
             self.agent_pos = new_pos
 
     def moveDown(self):
         new_pos = (self.agent_pos[0], self.agent_pos[1] + 1)
         if new_pos[1] < self.usedHeight and self.validMove(new_pos):
+            self.agent_prior_pos = self.agent_pos
             self.agent_pos = new_pos
     def moveRight(self):
         new_pos = (self.agent_pos[0] + 1, self.agent_pos[1])
         if new_pos[0] < self.usedWidth and self.validMove(new_pos):
+            self.agent_prior_pos = self.agent_pos
             self.agent_pos = new_pos
     def moveLeft(self):
         new_pos = (self.agent_pos[0] - 1, self.agent_pos[1])
         if new_pos[0] >= 0 and self.validMove(new_pos):
+            self.agent_prior_pos = self.agent_pos
             self.agent_pos = new_pos
     
     def draw(self):
@@ -173,6 +202,12 @@ class Game:
                     # self.screen.blit(PIT_IMAGE, rect)
                     pygame.draw.rect(self.screen, self.wallColor, rect)
                     pygame.draw.circle(self.screen, self.backgroundColor, rect.center, GRID_SIZE // 2)
+                elif self.usedMaze[y][x] == 3:
+                    #OIL SLICK
+                    self.screen.blit(self.oil_resized_surface, rect.topleft)
+                elif self.usedMaze[y][x] == 4:
+                    # TELEPORTER
+                    self.screen.blit(self.warp_resized_surface, rect.topleft)
 
                 if self.destinationPos[0] == x and self.destinationPos[1] == y:
                     if self.destinationPos[0] < 0 or self.destinationPos[0] >= self.usedWidth or self.destinationPos[1] < 0 or self.destinationPos[1] >= self.usedHeight:
@@ -211,14 +246,63 @@ class Game:
 
         if(self.automated and self.agent_pos != self.destinationPos):
             self.visited.add(self.agent_pos)
+            self.agent_prior_pos = self.agent_pos
             self.agent_pos = path[1] 
             time.sleep(0.2)
 
+    def slipChance(self):
+        if self.usedMaze[self.agent_pos[1]][self.agent_pos[0]] == 3:
+            return random.random() < 0.75
+
+    
+    # Can handle bumping the top wall walls, but not right and bottom
+    def slip(self):
+        if self.agent_prior_pos[1] == self.agent_pos[1]:
+            # Finding slip direction and making sure you don't go into walls.
+            if self.agent_prior_pos[0] < self.agent_pos[0] and self.usedMaze[self.agent_pos[1]][self.agent_pos[0]+1] != 1:
+                self.agent_prior_pos = self.agent_pos
+                self.agent_pos = (self.agent_pos[0]+1, self.agent_pos[1])
+            elif self.usedMaze[self.agent_pos[1]][self.agent_pos[0]-1] != 1:
+                self.agent_prior_pos = self.agent_pos
+                self.agent_pos = (self.agent_pos[0]-1, self.agent_pos[1])
+        elif self.agent_prior_pos[0] == self.agent_pos[0]:
+            if self.agent_prior_pos[1] < self.agent_pos[1] and self.usedMaze[self.agent_pos[1] + 1][self.agent_pos[0]] != 1:
+                self.agent_prior_pos = self.agent_pos
+                self.agent_pos = (self.agent_pos[0], self.agent_pos[1]+1)
+            elif self.usedMaze[self.agent_pos[1]-1][self.agent_pos[0]] != 1:
+                self.agent_prior_pos = self.agent_pos
+                self.agent_pos = (self.agent_pos[0], self.agent_pos[1]-1)        
+        self.draw()
+
+    def handle_pit_fall(self):
+        if self.usedMaze[self.agent_pos[1]][self.agent_pos[0]] == 2:
+            self.agent_prior_pos = AGENT_POS
+            self.agent_pos = AGENT_POS
+            self.draw()
+
+    def handle_teleporter(self):
+        if self.usedMaze[self.agent_pos[1]][self.agent_pos[0]] == 4:
+            if self.usedMaze[self.agent_pos[1]][self.agent_pos[0]] != self.usedMaze[self.agent_prior_pos[1]][self.agent_prior_pos[0]]:
+                self.agent_prior_pos = self.agent_pos
+                for teleporterPair in self.teleporters:
+                    if(teleporterPair[0] == self.agent_pos):
+                        self.agent_pos = teleporterPair[1]
+                        return
+                    elif(teleporterPair[1] == self.agent_pos):
+                        self.agent_pos = teleporterPair[0]
+                        return
+        self.draw()
+
     def handle_map_events(self):
-        if self.usedMaze[self.agent_pos[1]][self.agent_pos[0]] > 1:
-            if self.usedMaze[self.agent_pos[1]][self.agent_pos[0]] == 2:
-                self.agent_pos = AGENT_POS
-                self.draw()
+        # Looping over too much. Needs to check once per move.
+        if(self.slipChance()):
+            self.slip()
+        self.handle_pit_fall()
+        self.handle_teleporter()
+
+        # teleporter
+
+
 
     def run(self):
         while self.running:
