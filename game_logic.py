@@ -50,7 +50,7 @@ class Game:
         # Convert the resized image to a Pygame surface
         self.oil_resized_surface = pygame.surfarray.make_surface(np.array(oil_resized_image))
         self.warp_resized_surface = pygame.surfarray.make_surface(np.array(warp_resized_image))
-
+        self.useMoveEffect = True
         # Set up the screen
         self.screen = pygame.display.set_mode((self.windowWidth, self.windowHeight))
         pygame.display.set_caption("My Game: Running")
@@ -170,22 +170,26 @@ class Game:
     def moveUp(self):
         new_pos = (self.agent_pos[0], self.agent_pos[1] - 1)
         if new_pos[1] >= 0 and self.validMove(new_pos):
+            self.useMoveEffect = True
             self.agent_prior_pos = self.agent_pos
             self.agent_pos = new_pos
 
     def moveDown(self):
         new_pos = (self.agent_pos[0], self.agent_pos[1] + 1)
         if new_pos[1] < self.usedHeight and self.validMove(new_pos):
+            self.useMoveEffect = True            
             self.agent_prior_pos = self.agent_pos
             self.agent_pos = new_pos
     def moveRight(self):
         new_pos = (self.agent_pos[0] + 1, self.agent_pos[1])
         if new_pos[0] < self.usedWidth and self.validMove(new_pos):
+            self.useMoveEffect = True
             self.agent_prior_pos = self.agent_pos
             self.agent_pos = new_pos
     def moveLeft(self):
         new_pos = (self.agent_pos[0] - 1, self.agent_pos[1])
         if new_pos[0] >= 0 and self.validMove(new_pos):
+            self.useMoveEffect = True
             self.agent_prior_pos = self.agent_pos
             self.agent_pos = new_pos
     
@@ -245,31 +249,36 @@ class Game:
         pygame.display.flip()
 
         if(self.automated and self.agent_pos != self.destinationPos):
+            self.useMoveEffect = True
             self.visited.add(self.agent_pos)
             self.agent_prior_pos = self.agent_pos
             self.agent_pos = path[1] 
             time.sleep(0.2)
 
+    # Checks if slip chance has already been calculated and then calculates if it hasn't
     def slipChance(self):
-        if self.usedMaze[self.agent_pos[1]][self.agent_pos[0]] == 3:
-            return random.random() < 0.75
+        if self.useMoveEffect and self.usedMaze[self.agent_pos[1]][self.agent_pos[0]] == 3:
+                self.useMoveEffect = False
+                return random.random() < 0.75
+        else:
+            return False
 
     
-    # Can handle bumping the top wall walls, but not right and bottom
+    # Can handle bumping the top wall walls, but not right and bottom. No allowing moving right onto oil
     def slip(self):
         if self.agent_prior_pos[1] == self.agent_pos[1]:
             # Finding slip direction and making sure you don't go into walls.
             if self.agent_prior_pos[0] < self.agent_pos[0] and self.usedMaze[self.agent_pos[1]][self.agent_pos[0]+1] != 1:
                 self.agent_prior_pos = self.agent_pos
                 self.agent_pos = (self.agent_pos[0]+1, self.agent_pos[1])
-            elif self.usedMaze[self.agent_pos[1]][self.agent_pos[0]-1] != 1:
+            elif self.agent_prior_pos[0] > self.agent_pos[0] and self.usedMaze[self.agent_pos[1]][self.agent_pos[0]-1] != 1:
                 self.agent_prior_pos = self.agent_pos
                 self.agent_pos = (self.agent_pos[0]-1, self.agent_pos[1])
         elif self.agent_prior_pos[0] == self.agent_pos[0]:
             if self.agent_prior_pos[1] < self.agent_pos[1] and self.usedMaze[self.agent_pos[1] + 1][self.agent_pos[0]] != 1:
                 self.agent_prior_pos = self.agent_pos
                 self.agent_pos = (self.agent_pos[0], self.agent_pos[1]+1)
-            elif self.usedMaze[self.agent_pos[1]-1][self.agent_pos[0]] != 1:
+            elif self.agent_prior_pos[1] < self.agent_pos[1] and self.usedMaze[self.agent_pos[1]-1][self.agent_pos[0]] != 1:
                 self.agent_prior_pos = self.agent_pos
                 self.agent_pos = (self.agent_pos[0], self.agent_pos[1]-1)        
         self.draw()

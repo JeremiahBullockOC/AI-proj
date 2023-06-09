@@ -20,7 +20,8 @@ def create_teleporter(locations, number_of_teleporters):
     for col in range(n):
         for row in range(n):
             # No slicks beneath start and end points
-                if(locations[row][col] == 1):
+            # The col row is set like it is since the way its used by everything else makes it correct in the long run. Still remember and keep this way or fix all.
+                if(locations[col][row] == 1):
                     if(row > 0 and locations[row-1][col] == 0):
                         validWalls.append((row, col))
                     elif(row < n-1 and locations[row+1][col] == 0):
