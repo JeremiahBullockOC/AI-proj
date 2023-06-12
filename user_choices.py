@@ -59,6 +59,9 @@ class Choices:
             self.smallRandomMazeButton = Button('small random maze', 30, 130, 375, 80, 'Small Random Maze', lambda: self.mazeClick(self.smallRandomMazeButton))
             self.bigMazeButton = Button('big maze', 30, 230, 375, 80, 'Big Maze', lambda: self.mazeClick(self.bigMazeButton))
             self.bigRandomMazeButton = Button('big random maze', 30, 330, 375, 80, 'Big Random Maze', lambda: self.mazeClick(self.bigRandomMazeButton))
+            self.predictObstacleButton = Button('predict maze', 30, 330, 375, 80, 'Predict Maze', lambda: self.mazeClick(self.predictObstacleButton))
+            self.doNotPredictButton = Button('do not predict maze', 30, 330, 375, 80, 'Don\'t Predict Maze', lambda: self.mazeClick(self.predictObstacleButton))
+
 
             controlButtons.extend([self.automateButton, self.manualButton])
             assistanceButtons.extend([self.assistedButton, self.unassistedButton])

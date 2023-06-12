@@ -175,7 +175,7 @@ def ucs(maze, start, goal):
             if (
                 neighbor_node[0] < 0 or neighbor_node[0] >= len(maze[0]) or
                 neighbor_node[1] < 0 or neighbor_node[1] >= len(maze) or
-                maze[neighbor_node[1]][neighbor_node[0]] > 0 or
+                maze[neighbor_node[1]][neighbor_node[0]] not in [0, 3] or
                 neighbor_node in closed_list
             ):
                 continue
@@ -189,6 +189,7 @@ def ucs(maze, start, goal):
                 cost[neighbor_node] = new_cost
                 heappush(open_list, (new_cost, neighbor_node))
                 came_from[neighbor_node] = current_node
+
 
     # If we can't reach the goal node, return None
     return None

@@ -107,7 +107,7 @@ class Game:
             self.usedHeight = len(maze)
         if(not self.maze_size.__contains__('random')):
             self.destinationPos = (self.usedWidth-1, self.usedHeight-1)
-        self.usedMaze = create_pits(self.usedMaze, self.destinationPos)
+        self.usedMaze = handle_pit_creation(self.usedMaze, self.destinationPos)
         for row in self.usedMaze:
             for cell in row:
                     print('#' if cell else ' ', end='')
@@ -249,22 +249,23 @@ class Game:
         pygame.display.flip()
 
         if(self.automated and self.agent_pos != self.destinationPos):
-            self.useMoveEffect = True
-            self.visited.add(self.agent_pos)
-            self.agent_prior_pos = self.agent_pos
-            self.agent_pos = path[1] 
-            time.sleep(0.2)
+            if(path != None):
+                self.useMoveEffect = True
+                self.visited.add(self.agent_pos)
+                self.agent_prior_pos = self.agent_pos
+                self.agent_pos = path[1] 
+                time.sleep(0.2)
 
     # Checks if slip chance has already been calculated and then calculates if it hasn't
     def slipChance(self):
         if self.useMoveEffect and self.usedMaze[self.agent_pos[1]][self.agent_pos[0]] == 3:
                 self.useMoveEffect = False
-                return random.random() < 0.75
+                return random.random() < 0.8
         else:
             return False
 
     
-    # Can handle bumping the top wall walls, but not right and bottom. No allowing moving right onto oil
+    # Cant slip up. If slip into boundary it resets to start
     def slip(self):
         if self.agent_prior_pos[1] == self.agent_pos[1]:
             # Finding slip direction and making sure you don't go into walls.

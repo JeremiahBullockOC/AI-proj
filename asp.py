@@ -14,8 +14,81 @@ def on_model(model, locations):
             locations[row - 1][col - 1] = 2
     return locations
 
+# TODO Add splitting into sub arrays. In this case 4 of them
+
+def handle_pit_creation(locations, destination):
+    length = len(locations[0])
+
+    if length == 10:
+        return create_pits(locations, destination)
+    else:
+        upperLeft = [[0 for _ in range(10)] for _ in range(10)]
+        upperRight = [[0 for _ in range(10)] for _ in range(10)]
+        lowerLeft = [[0 for _ in range(10)] for _ in range(10)]
+        lowerRight = [[0 for _ in range(10)] for _ in range(10)]
+
+        for col in range(length):
+            for row in range(length):
+                if(col < 10):
+                    if(row < 10):
+                        upperLeft[col % 10][row % 10] = locations[col][row]
+                    else:
+                        lowerLeft[col % 10][row % 10] = locations[col][row]
+                else:
+                    if(row < 10):
+                        upperRight[col % 10][row % 10] = locations[col][row]
+                    else:
+                        lowerRight[col % 10][row % 10] = locations[col][row]
+
+        modifiedDestination = (destination[0]%10, destination[1]%10)
+        print(str(destination))
+        print(str(modifiedDestination))
+        if(destination[0] < 10):
+            if(destination[1] < 10):
+                    upperLeft = create_pits(upperLeft, modifiedDestination)
+                    upperRight = create_pits(upperRight, None)
+                    lowerLeft = create_pits(lowerLeft, None)
+                    lowerRight = create_pits(lowerRight, None)
+            else:
+                upperLeft = create_pits(upperLeft, None)
+                upperRight = create_pits(upperRight, None)
+                lowerLeft = create_pits(lowerLeft, modifiedDestination)
+                lowerRight = create_pits(lowerRight, None)
+        else:
+            if(destination[1] < 10):
+                upperLeft = create_pits(upperLeft, None)
+                upperRight = create_pits(upperRight, modifiedDestination)
+                lowerLeft = create_pits(lowerLeft, None)
+                lowerRight = create_pits(lowerRight, None)
+            else:
+                upperLeft = create_pits(upperLeft, None)
+                upperRight = create_pits(upperRight, None)
+                lowerLeft = create_pits(lowerLeft, None)
+                lowerRight = create_pits(lowerRight, modifiedDestination)
+
+
+        updatedArray = [[0 for _ in range(20)] for _ in range(20)]
+
+        for col in range(length):
+            for row in range(length):
+                if(col < 10):
+                    if(row < 10):
+                        updatedArray[col][row] = upperLeft[col % 10][row % 10]
+                    else:
+                        updatedArray[col][row] = lowerLeft[col % 10][row % 10]
+                else:
+                    if(row < 10):
+                        updatedArray[col][row] = upperRight[col % 10][row % 10]
+                    else:
+                        updatedArray[col][row] = lowerRight[col % 10][row % 10]
+        return updatedArray
+
+
+
 def create_pits(locations, destination):
 
+    if(destination is None):
+        destination = (0,0)
     n = len(locations[0])
     control = clingo.Control()
 
