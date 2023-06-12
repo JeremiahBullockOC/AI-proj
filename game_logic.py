@@ -7,7 +7,7 @@ from user_choices import Choices
 from asp import *
 from PIL import Image
 import numpy as np
-import sklearn
+from predict import *
 
 
 
@@ -34,7 +34,7 @@ class Game:
         self.control = choice.getControl()
         self.algorithm = choice.getAlgorithm()
         self.maze_size = choice.getMaze()
-        
+        self.predict = choice.getPredict()
 
         self.handle_choices()
 
@@ -50,6 +50,16 @@ class Game:
         # Convert the resized image to a Pygame surface
         self.oil_resized_surface = pygame.surfarray.make_surface(np.array(oil_resized_image))
         self.warp_resized_surface = pygame.surfarray.make_surface(np.array(warp_resized_image))
+        black_color = (0, 0, 0, 128)
+
+        # Create a copy of the image with the semi-transparent black color
+        self.oil_darkened_image = pygame.Surface.from_surface(self.oil_resized_surface.copy() * black_color)
+        self.warp_darkened_image = pygame.Surface.from_surface(self.warp_resized_surface.copy() * black_color)
+
+
+
+
+
         self.useMoveEffect = True
         # Set up the screen
         self.screen = pygame.display.set_mode((self.windowWidth, self.windowHeight))
@@ -107,13 +117,15 @@ class Game:
             self.usedHeight = len(maze)
         if(not self.maze_size.__contains__('random')):
             self.destinationPos = (self.usedWidth-1, self.usedHeight-1)
-        self.usedMaze = handle_pit_creation(self.usedMaze, self.destinationPos)
-        for row in self.usedMaze:
-            for cell in row:
-                    print('#' if cell else ' ', end='')
-            print()
+        # for row in self.usedMaze:
+        #     for cell in row:
+        #             print('#' if cell else ' ', end='')
+        #     print()
 
+        if(self.predict):
+            self.predictedObstacles = predictObstacles(self.usedMaze.copy(), self.destinationPos)
         # Adding oil slicks and teleporters
+        self.usedMaze = handle_pit_creation(self.usedMaze, self.destinationPos)
         self.usedMaze = create_oil_slick(self.usedMaze, self.destinationPos, 0.05)
         self.usedMaze, self.teleporters = create_teleporter(self.usedMaze, (self.usedWidth / 5))  
         # Editing window height
@@ -193,34 +205,55 @@ class Game:
             self.agent_prior_pos = self.agent_pos
             self.agent_pos = new_pos
     
+    def regDraw(self, y, x, rect):
+                        if self.usedMaze[y][x] == 1:
+                            pygame.draw.rect(self.screen, self.wallColor, rect)
+                        elif self.usedMaze[y][x] == 2:
+                            # self.screen.blit(PIT_IMAGE, rect)
+                            pygame.draw.rect(self.screen, self.wallColor, rect)
+                            pygame.draw.circle(self.screen, self.backgroundColor, rect.center, GRID_SIZE // 2)
+                        elif self.usedMaze[y][x] == 3:
+                            #OIL SLICK
+                            self.screen.blit(self.oil_resized_surface, rect.topleft)
+                        elif self.usedMaze[y][x] == 4:
+                            # TELEPORTER
+                            self.screen.blit(self.warp_resized_surface, rect.topleft)
+                        if self.destinationPos[0] == x and self.destinationPos[1] == y:
+                            pygame.draw.circle(self.screen, self.destinationColor, rect.center, GRID_SIZE // 2)
+                        if (x, y) == self.destinationPos and (x, y) == self.agent_pos:
+                            # TODO Need to put as last thing drawn
+                            text = self.font.render('Bazingga!', True, PURPLE)
+                            text_rect = text.get_rect(center=self.screen.get_rect().center)
+                            self.screen.blit(text, text_rect)        
+    
+    def predictDraw(self, y, x, rect):
+        value = self.predict[(y*self.usedHeight) + x]
+        if(value < 0.33):
+            return
+        elif(value > 1.3)
+            self.screen.blit(self.warp_resized_surface, rect.topleft)
+        return # Read from predict list
+    
     def draw(self):
         # Draw the grid
         self.screen.fill(self.backgroundColor)
-        for y in range(self.usedHeight):
-            for x in range(self.usedWidth):
-                rect = pygame.Rect(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE)
-                pygame.draw.rect(self.screen, self.gridColor, rect, 1)
-                if self.usedMaze[y][x] == 1:
-                    pygame.draw.rect(self.screen, self.wallColor, rect)
-                elif self.usedMaze[y][x] == 2:
-                    # self.screen.blit(PIT_IMAGE, rect)
-                    pygame.draw.rect(self.screen, self.wallColor, rect)
-                    pygame.draw.circle(self.screen, self.backgroundColor, rect.center, GRID_SIZE // 2)
-                elif self.usedMaze[y][x] == 3:
-                    #OIL SLICK
-                    self.screen.blit(self.oil_resized_surface, rect.topleft)
-                elif self.usedMaze[y][x] == 4:
-                    # TELEPORTER
-                    self.screen.blit(self.warp_resized_surface, rect.topleft)
+        bazinga = False
+        if(self.predict):
+            for y in range(self.usedHeight):
+                for x in range(self.usedWidth):
+                    rect = pygame.Rect(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE)
+                    pygame.draw.rect(self.screen, self.gridColor, rect, 1)
+                    if(abs(y - self.agent_pos[0]) + abs(x - self.agent_pos[1]) > 3):
+                        self.regDraw(y,x,rect)
+                    else:
+                        self.predictDraw(y, x, rect)
+        else:
+            for y in range(self.usedHeight):
+                for x in range(self.usedWidth):
+                    rect = pygame.Rect(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE)
+                    pygame.draw.rect(self.screen, self.gridColor, rect, 1)
+                    self.regDraw(y,x,rect)
 
-                if self.destinationPos[0] == x and self.destinationPos[1] == y:
-                    if self.destinationPos[0] < 0 or self.destinationPos[0] >= self.usedWidth or self.destinationPos[1] < 0 or self.destinationPos[1] >= self.usedHeight:
-                        continue
-                    pygame.draw.circle(self.screen, self.destinationColor, rect.center, GRID_SIZE // 2)
-                if (x, y) == self.destinationPos and (x, y) == self.agent_pos:
-                    text = self.font.render('Bazingga!', True, PURPLE)
-                    text_rect = text.get_rect(center=self.screen.get_rect().center)
-                    self.screen.blit(text, text_rect)
 
 
         if(self.automated or self.assisted):

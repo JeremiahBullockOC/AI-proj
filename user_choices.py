@@ -16,13 +16,16 @@ global algorithm
 global maze_size 
 global theme 
 global clicked
+global predict
 
 state = 'State 1'
 control = ''
 maze_size = ''
 algorithm = ''
 theme = ''
+predict = False
 clicked = False
+
 
 
 controlButtons = []
@@ -31,6 +34,7 @@ algorithmButtons = []
 mazeButtons = []
 themeButtons = []
 returnButtons = []
+predictButtons = []
 
 class Choices:
     def __init__(self):
@@ -59,8 +63,8 @@ class Choices:
             self.smallRandomMazeButton = Button('small random maze', 30, 130, 375, 80, 'Small Random Maze', lambda: self.mazeClick(self.smallRandomMazeButton))
             self.bigMazeButton = Button('big maze', 30, 230, 375, 80, 'Big Maze', lambda: self.mazeClick(self.bigMazeButton))
             self.bigRandomMazeButton = Button('big random maze', 30, 330, 375, 80, 'Big Random Maze', lambda: self.mazeClick(self.bigRandomMazeButton))
-            self.predictObstacleButton = Button('predict maze', 30, 330, 375, 80, 'Predict Maze', lambda: self.mazeClick(self.predictObstacleButton))
-            self.doNotPredictButton = Button('do not predict maze', 30, 330, 375, 80, 'Don\'t Predict Maze', lambda: self.mazeClick(self.predictObstacleButton))
+            self.predictObstacleButton = Button('predict', 30, 30, 375, 80, 'Predict Maze', lambda: self.predictClick(self.predictObstacleButton))
+            self.doNotPredictButton = Button('nopred', 30, 130, 375, 80, 'Don\'t Predict Maze', lambda: self.predictClick(self.doNotPredictButton))
 
 
             controlButtons.extend([self.automateButton, self.manualButton])
@@ -68,7 +72,8 @@ class Choices:
             algorithmButtons.extend([self.astarButton, self.dfsButton, self.bfsButton, self.ucsButton])
             mazeButtons.extend([self.smallMazeButton, self.smallRandomMazeButton, self.bigMazeButton, self.bigRandomMazeButton])
             themeButtons.extend([self.basicButton, self.retroButton, self.oceanButton])
-            
+            predictButtons.extend([self.predictObstacleButton, self.doNotPredictButton])
+
             # TODO Fix the return function
             #returnButtons.append(self.returnButton)
     def returnFunc(self):
@@ -184,6 +189,19 @@ class Choices:
             state = 'State 5'
 
 
+    def predictClick(self, button):
+        global predict
+        global clicked
+        clicked = True        
+        if button.buttonVal.casefold() == 'predict':
+            predict = True
+        elif button.buttonVal.casefold() == 'nopred':
+            predict = False        
+
+
+        global state
+        if(predict != ''):
+            state = 'State 6'
 
     def draw(self):
 
@@ -230,6 +248,12 @@ class Choices:
                 Object.process(self.screen)
             for Object in returnButtons:
                 Object.process(self.screen)
+
+        elif state.casefold() in ['state 5']:
+            for Object in predictButtons:
+                Object.process(self.screen)
+            for Object in returnButtons:
+                Object.process(self.screen)
         
         pygame.display.flip()
 
@@ -254,7 +278,7 @@ class Choices:
                     time.sleep(0.25)
 
 
-                if(state.casefold() == 'state 5'):
+                if(state.casefold() == 'state 6'):
                     self.finish()
 
                 time.sleep(0.1)
@@ -271,8 +295,8 @@ class Choices:
         return algorithm
     def getMaze(self):
         return maze_size
-
-
+    def getPredict(self):
+        return predict
 
 
 

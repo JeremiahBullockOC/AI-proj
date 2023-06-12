@@ -4,7 +4,7 @@ import copy
 
 
 def on_model(model, locations):
-    print('In on_model')
+    # print('In on_model')
     for atom in model.symbols(atoms=True):
         # print(atom)
 
@@ -41,8 +41,8 @@ def handle_pit_creation(locations, destination):
                         lowerRight[col % 10][row % 10] = locations[col][row]
 
         modifiedDestination = (destination[0]%10, destination[1]%10)
-        print(str(destination))
-        print(str(modifiedDestination))
+        # print(str(destination))
+        # print(str(modifiedDestination))
         if(destination[0] < 10):
             if(destination[1] < 10):
                     upperLeft = create_pits(upperLeft, modifiedDestination)
@@ -92,7 +92,7 @@ def create_pits(locations, destination):
     n = len(locations[0])
     control = clingo.Control()
 
-    print('The n used is: ' + str(n))
+    # print('The n used is: ' + str(n))
 
     program = ''
 
@@ -167,13 +167,13 @@ def create_pits(locations, destination):
     try:
         with control.solve(yield_=True) as handle:
             for model in handle:
-                print('In the for loop')
+                # print('In the for loop')
                 final_locations = on_model(model, locations_copy)
-            print('Starting model call')
-            print('Exhausted: ' + str(handle.get().exhausted))
-            print('Interrupted: ' + str(handle.get().interrupted))
-            print('Unknown: ' + str(handle.get().unknown))
-            print('Satisfiable: ' + str(handle.get().satisfiable))
+            # print('Starting model call')
+            # print('Exhausted: ' + str(handle.get().exhausted))
+            # print('Interrupted: ' + str(handle.get().interrupted))
+            # print('Unknown: ' + str(handle.get().unknown))
+            # print('Satisfiable: ' + str(handle.get().satisfiable))
     except clingo.SolveError as e:
         print('No models found')
         print(e)
